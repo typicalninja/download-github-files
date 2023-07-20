@@ -89,10 +89,8 @@ export const fetchDirectoryViaTrees = async ({ username, repo, branch, dir }: Re
         throw new Error(`Api Returned error ${json.message}`);
     }
 
-    console.log('json', json)
     for (const item of json.tree) {
 		if (item.type === 'blob' && item.path.startsWith(dir)) {
-       //     console.log(item.path)
 			files.push({ dir: item.path, downloaded: false, failed: false });
 		}
 	}

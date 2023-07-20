@@ -35,7 +35,7 @@ export default function Index() {
       <Divider />
       <form onSubmit={form.onSubmit(onSubmit)}>
         <TextInput
-          placeholder="https://github.com/username/repo/file.png"
+          placeholder="https://github.com/username/repo/blob/main/file.png"
           label="Directory Link"
           size="md"
           withAsterisk

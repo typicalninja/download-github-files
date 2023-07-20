@@ -4,9 +4,9 @@ import {
   ColorScheme,
 } from "@mantine/core";
 
-import { Notifications } from '@mantine/notifications';
+import { Notifications } from "@mantine/notifications";
 
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -16,38 +16,41 @@ import Root from "./routes/root.tsx";
 import ErrorPage from "./error.tsx";
 
 // index
-import Index from './routes/index.tsx'
+import Index from "./routes/index.tsx";
 import DownloadPage from "./routes/download.tsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    children: [
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Root />,
+      errorElement: <ErrorPage />,
+      children: [
         {
-            path: '/',
-            element: <Index />
+          path: "/",
+          element: <Index />,
         },
         {
-            path: '/d',
-            element: <DownloadPage />
-        }
-    ]
-  },
-], { basename: '/download-github-files' });
+          path: "/d",
+          element: <DownloadPage />,
+        },
+      ],
+    },
+  ],
+  { basename: "/download-github-files" }
+);
 
 export default function App() {
-    const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-        key: 'user-theme-preference',
-        defaultValue: 'dark',
-        getInitialValueInEffect: true,
-      });
-    
-      const toggleColorScheme = (value?: ColorScheme) =>
-        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
-    
-      useHotkeys([['mod+J', () => toggleColorScheme()]]);
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: "user-theme-preference",
+    defaultValue: "dark",
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+  useHotkeys([["mod+J", () => toggleColorScheme()]]);
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
@@ -58,7 +61,7 @@ export default function App() {
         withGlobalStyles
         withNormalizeCSS
       >
-        <Notifications  position="top-right" />
+        <Notifications position="top-right" />
         <RouterProvider router={router} />
       </MantineProvider>
     </ColorSchemeProvider>

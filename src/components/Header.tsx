@@ -9,7 +9,7 @@ export default function HeaderComponent() {
     return (
         <Header height={60} p="xs">
             <Group sx={{ height: '100%' }} px={20} position="apart">
-                <Link to="/"><Text><BsFolderFill /> GhFetch</Text></Link>
+                <Link to="/"><Text><BsFolderFill /> download-github-files</Text></Link>
                 <ActionIcon variant="default"  onClick={() => toggleColorScheme()} size={30}>
                 {colorScheme === 'dark' ? <BsSun /> : <BsMoonStars size="1rem" />}
                 </ActionIcon>

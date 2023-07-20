@@ -7,9 +7,9 @@ export default function FooterComponent() {
             <Flex justify="center" gap="md">
             <Text align='center'>Made with ❤️ by <Anchor target="_blank" href={links.personalSite}>Typicalninja</Anchor></Text>
             <Divider  orientation="vertical"/>
-            <Anchor href={links.sourceRepo}>Source code</Anchor>
+            <Anchor href={links.sourceRepo} target="_blank">Source code</Anchor>
             <Divider  orientation="vertical"/>
-            <Anchor>Analytics</Anchor>
+            <Anchor href={links.analytics} target="_blank">Analytics</Anchor>
             </Flex>
         </Footer>
     )

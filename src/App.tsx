@@ -40,7 +40,7 @@ const router = createBrowserRouter([
 export default function App() {
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
         key: 'user-theme-preference',
-        defaultValue: 'light',
+        defaultValue: 'dark',
         getInitialValueInEffect: true,
       });
     

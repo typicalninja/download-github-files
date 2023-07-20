@@ -29,7 +29,7 @@ export default function Index() {
     <Flex mih={200} gap="lg" justify="center" align="center" direction="column">
       <Title>Download Folders & Files from any* Github repository</Title>
       <Title order={5}>
-        Effortlessly and swiftly download <Text span c="teal.2">individual</Text> directories or files from <Text span c="blue"inherit fw={500}> Github </Text> in a snap.
+        Effortlessly and swiftly download <Text span c="teal">individual</Text> directories or files from <Text span c="blue"inherit fw={500}> Github </Text> in a snap.
         Download the specific content you need without any hassle.
       </Title>
       <Divider />

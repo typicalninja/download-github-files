@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && pnpm run build:copy",
-    "build:copy": "cp build/index.html build/404.html",
+    "build:copy": "cp dist/index.html dist/404.html",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

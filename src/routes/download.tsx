@@ -95,7 +95,7 @@ async function LifeCycleFetchFiles(
 ): Promise<File[]> {
   // blobs are just files direct
   if (resolved.type === "blob")
-    return [{ dir: resolved.dir, downloaded: false, failed: false }];
+    return [{ dir: resolved.dir, url: '', downloaded: false, failed: false }];
   else {
     const filesData = await fetchDirectoryViaTrees(resolved);
     let files = filesData.fileList;

@@ -34,7 +34,7 @@ export default function DownloaderInfoComponent({
         <TextInput
           placeholder="Loading..."
           icon={<GoGitBranch />}
-          value={branch}
+          value={branch || 'Invalid branch'}
           readOnly
         />
       </span>
@@ -42,7 +42,7 @@ export default function DownloaderInfoComponent({
         <TextInput
           placeholder="Loading..."
           withAsterisk
-          value={description}
+          value={description || 'No Description'}
           readOnly
           icon={<BiNote />}
         />

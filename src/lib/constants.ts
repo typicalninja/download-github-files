@@ -37,9 +37,21 @@ export interface ResolvedGithubData {
   username: string;
   repo: string;
   type: string;
-  dir: string;
+  directoryOrFile: string;
   branch: string;
 }
+
+/**
+ * !Incremental rename to resolvedGithubData
+ */
+export interface ResolvedRepoData {
+  username: string;
+  repo: string;
+  type: string;
+  branch: string;
+  directoryOrFile: string;
+}
+
 
 export interface DownloadableFile {
   filename: string;

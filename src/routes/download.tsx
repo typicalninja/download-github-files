@@ -16,7 +16,7 @@ import {
   Center,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // icons
 import {
@@ -46,6 +46,7 @@ import saveFile from "save-file";
 import pMap from "p-map";
 import pRetry from "p-retry";
 import { SettingsManager } from "../lib/Settings";
+import { RepositoryDownloader } from "../lib/gh";
 
 /**
  * Lifecycle to get repo data
@@ -177,6 +178,17 @@ async function LifeCycleDownloadFiles(
   return fileData;
 }
 
+function ErrorNotification(message: string, title: string, critical: boolean) {
+  notifications.show({
+    message,
+    title,
+    icon: <AiOutlineClose />,
+    color: "red",
+    // if critical errors should stay visible until closed else 10s
+    autoClose: critical ? false : 10000
+  });
+}
+
 /** Main */
 export default function DownloadPage() {
   const [searchParams] = useSearchParams();
@@ -189,23 +201,37 @@ export default function DownloadPage() {
     null
   );
 
-  const savePackedFiles = () => {
+  const downloader = useMemo(() => new RepositoryDownloader(searchParams.get("resolve") as string), [])
+
+
+  useEffect(() => {
+    if(downloader.resolved) throw new Error(`Downloading of files is not supported. Github Already support this feature`)
+    void downloader.fetchRepo().then((info) => {
+      setRepoInfo(info);
+
+
+    })
+    // catch RepoDiscovery errors
+    .catch((err) => ErrorNotification((err as Error).message, 'Repository Discovery Error', true))
+  }, [downloader])
+
+ /* const savePackedFiles = () => {
     if (downloadableFile) {
       void saveFile(downloadableFile.content, downloadableFile.filename).then(
         () => console.log(`Manual download done`)
       );
     }
-  };
+  };*/
 
-  const resolved = parseGithubResolver(searchParams.get("resolve") as string);
+/*  const resolved = parseGithubResolver(searchParams.get("resolve") as string);
   // resolver failed, error
   if (!resolved)
     throw new TypeError(
       `Failed to resolve url, must match format: /username/repo/[tree | blob]/(branch)/[folder | file.js]`
-    );
+    );*/
 
   // run on start
-  useEffect(() => {
+ /* useEffect(() => {
     // if idle fetch all files and repo data
     if (state === AppStates.Idle) {
       // on start get repo data
@@ -267,14 +293,14 @@ export default function DownloadPage() {
         }
       );
     }
-  }, [state, fileInfo]);
+  }, [state, fileInfo]);*/
 
   return (
     <Flex direction="column" gap="md">
       {/** Info panel */}
-      {repoInfo !== null ? (
+      {downloader.resolved !== null && repoInfo ? (
         <DownloaderInfoComponent
-          resolvedData={resolved}
+          resolvedData={downloader.resolved}
           githubData={repoInfo}
           fileLength={fileInfo.length}
         />
@@ -290,7 +316,7 @@ export default function DownloadPage() {
           leftIcon={<AiOutlineCloudDownload />}
           variant="outline"
           disabled={!downloadableFile}
-          onClick={savePackedFiles}
+         
         >
           {downloadableFile
             ? `Download Packed ${downloadableFile.filename}`

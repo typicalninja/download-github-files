@@ -1,13 +1,16 @@
 import { Flex, TextInput, Button, Title, Divider, Text } from "@mantine/core";
 // icons
 import { BsCloudDownload } from "react-icons/bs";
-import { AiFillFile } from "react-icons/ai";
+import {  AiFillStar } from "react-icons/ai";
+import { GoRepo } from "react-icons/go";
 
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "@mantine/form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { notifications } from "@mantine/notifications";
+import { SettingsManager as settings } from "../lib/Settings";
+
 
 export default function Index() {
   const navigate = useNavigate();
@@ -18,22 +21,34 @@ export default function Index() {
   });
 
   const onSubmit = (values: { directoryLink: string }) => {
-    localStorage.setItem("savedDir", values.directoryLink);
+    settings.setSetting("lastDirectory", values.directoryLink);
     navigate(`/d?resolve=${values.directoryLink}`);
   };
   useEffect(() => {
-    const savedDir = localStorage.getItem("savedDir");
+    const savedDir = settings.getSetting('lastDirectory');
     if (savedDir) form.setValues({ directoryLink: savedDir });
 
     // in index check for github token and if not found suggest it
-    const ghToken = localStorage.getItem("requestToken");
-    if (!ghToken)
+    const ghToken = settings.getSetting('token')
+    const lastSuggestion = settings.getSetting('tokenSuggestion')
+    if (!ghToken) {
+      //if(lastSuggestion && (lastSuggestion + (60000 * 5)) > Date.now()) return;
+      settings.setSetting('tokenSuggestion', Date.now());
       notifications.show({
         title: "Access Private repositories & Higher downloads limits",
         message: `If you want higher downloads limits & access to private repositories, add a Github token using the cog wheel in the header`,
         id: "requestTokenNotification",
         autoClose: false,
       });
+      // little bit of promotion
+      notifications.show({
+        title: "Give us a star ⭐",
+        message: `If you like this project please give us a star ⭐ on our github page!`,
+        id: "starNotification",
+        color: 'yellow',
+        icon: <AiFillStar />
+      });
+    }
     // disable since, form changes when you type in the input, resulting in directoryLink Not changing
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -84,13 +99,13 @@ export default function Index() {
           </Button>
           <Button
             onClick={() => window.open(links.sourceRepo)}
-            leftIcon={<AiFillFile />}
+            leftIcon={<GoRepo />}
             variant="outline"
             color="teal"
             radius="xs"
             size="md"
           >
-            Source code
+            Github page
           </Button>
         </Flex>
       </form>

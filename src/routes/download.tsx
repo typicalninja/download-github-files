@@ -18,7 +18,7 @@ import {
   FileInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 // icons
 import {
@@ -48,6 +48,7 @@ import { zip, type Zippable } from "fflate";
 // perf
 import pMap from "p-map";
 import pRetry from "p-retry";
+import DownloaderSettingsManager from "../lib/Settings";
 
 /**
  * Lifecycle to get repo data
@@ -188,6 +189,7 @@ export default function DownloadPage() {
   const [downloadableFile, setDownloadable] = useState<DownloadableFile | null>(
     null
   );
+
   const postDownload = () => {
     if (downloadableFile) {
       void saveFile(downloadableFile.content, downloadableFile.filename).then(
@@ -202,51 +204,6 @@ export default function DownloadPage() {
     throw new TypeError(
       `Failed to resolve url, must match format: /username/repo/[tree | blob]/(branch)/[folder | file.js]`
     );
-
-  const Lifecycle = useCallback(async () => {
-    if (state === AppStates.Finished) return;
-    const repoDataLifeCycle = await LifeCycleGetRepoData(resolved);
-    if (!repoDataLifeCycle) return;
-    // result was found continue
-    setRepoInfo(repoDataLifeCycle);
-
-    // find files
-    const fetchFilesLifeCycle = await LifeCycleFetchFiles(resolved);
-
-    console.log(`LifeCycleFetchFiles: success`, fetchFilesLifeCycle);
-    setFileInfo(fetchFilesLifeCycle);
-    setState(AppStates.Downloading);
-
-    const downloadedFiles = await LifeCycleDownloadFiles(
-      fetchFilesLifeCycle,
-      resolved
-    );
-
-    console.log(`LifeCycleDownloadFiles: Success`);
-    setFileInfo(
-      downloadedFiles.map((c) => ({
-        dir: c.dir,
-        downloaded: c.downloaded,
-        failed: c.failed,
-      }))
-    );
-    setState(AppStates.Zipping);
-
-    // the folder name
-    const folderName = resolved.dir.split("/")[0];
-    //const downloadable = await LifeCycleSaveFiles(downloadedFiles, folderName);
-    // download after initial
-    //  setDownloadable(downloadable);
-    //  setState(AppStates.Finished);
-
-    notifications.show({
-      title: `You download is complete`,
-      message: `Successfully Downloaded ${downloadedFiles.length} file(s)`,
-      color: "teal",
-      icon: <AiOutlineCheck />,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // run on start
   useEffect(() => {

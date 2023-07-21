@@ -7,7 +7,7 @@ import { GoRepo } from "react-icons/go";
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "@mantine/form";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { notifications } from "@mantine/notifications";
 import { SettingsManager as settings } from "../lib/Settings";
 

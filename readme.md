@@ -57,13 +57,13 @@ There are currently 3 Downloader modes,
 * This tool utilizes the GitHub API to retrieve file lists and their content. As with any API, there are limits. By default, the tool operates in ****Guest** mode, which may have lower API limits.
 
 * If you desire a higher API limit, [creating a GitHub personal token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo) and 
-adding it to the settings panel of the downloader **Remember to refresh the page** after adding the token.
+[adding it to the settings panel](#settings-panel-overview) of the downloader **Remember to refresh the page** after adding the token.
 
 * For large repositories this api will try to download the content via a different strategy due to api limitation, however the amount of files downloaded may vary (it may also cost more in resources)
 
 ### Limitation on Private Repositories
 
-* The downloader requires a personal access token to be added to the settings panel to view private repository
+* The downloader requires a personal access token to be [added to the settings panel]((#settings-panel-overview)) to view private repository
 
 > [Click here to generate a personal access token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo)
 

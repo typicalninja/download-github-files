@@ -34,10 +34,10 @@ export default class DownloaderSettingsManager {
         this.saveSettings(newSettings);
         return newSettings;
     }
-    isSetting<T extends keyof DownloaderSettings>(settingName: T, expected: DownloaderSettings[T]): boolean {
+    isSetting<T extends keyof DownloaderSettings>(settingName: T, expected: DownloaderSettings[T][]): boolean {
         const setting = this.getSetting(settingName);
         if(!setting) return false;
-        return setting === expected;
+        return expected.some((exp) => exp === setting);
     }
 }
 

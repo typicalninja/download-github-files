@@ -48,9 +48,9 @@ export default function SettingsDrawer() {
         onChange={updateMode}
         value={mode}
         data={[
-          { value: "autoFetch", label: "Fetch repo and Files" },
+          { value: "autoFetch", label: "Fetch repo and File List" },
           { value: "autoFetchAnDownload", label: "Fetch repo and Download Files" },
-          { value: "autoSave", label: "Fetch Repo and Save File immediately" },
+          { value: "autoSave", label: "Fetch Repo and Download & Save Files" },
         ]}
       />
       <Text c="teal.6" fz="sm" fw={700}>This modifies how the downloader will work, for most the default setting would work</Text>

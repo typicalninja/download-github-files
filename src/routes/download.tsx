@@ -9,16 +9,14 @@ import {
   Flex,
   Text,
   Table,
-  Skeleton,
   Loader,
   Anchor,
   Divider,
   Button,
   Center,
-  FileInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 // icons
 import {
@@ -37,18 +35,17 @@ import {
   ResolvedGithubData,
   DownloadableFile,
 } from "../lib/constants";
-import { blobToArrayBuffer, getSaveFiles } from "../lib/util";
+import { getSaveFiles } from "../lib/util";
 
 import DownloaderInfoComponent from "../components/DownloaderInfo";
 
 // file related
 import saveFile from "save-file";
-import { zip, type Zippable } from "fflate";
 
 // perf
 import pMap from "p-map";
 import pRetry from "p-retry";
-import DownloaderSettingsManager from "../lib/Settings";
+import { SettingsManager } from "../lib/Settings";
 
 /**
  * Lifecycle to get repo data
@@ -190,7 +187,7 @@ export default function DownloadPage() {
     null
   );
 
-  const postDownload = () => {
+  const savePackedFiles = () => {
     if (downloadableFile) {
       void saveFile(downloadableFile.content, downloadableFile.filename).then(
         () => console.log(`Manual download done`)
@@ -219,9 +216,8 @@ export default function DownloadPage() {
           void LifeCycleFetchFiles(resolved).then((files) => {
             setFileInfo(files);
             if (files.length) {
-              // set state to starting so the download button appears
-              // TODO If auto download is available set to immediate Download state
-              setState(AppStates.Starting);
+              // set state to starting so the download button appears or immediately download if set to setting
+              setState(SettingsManager.isSetting('downloaderMode', ['autoFetchAnDownload', 'autoSave']) ? AppStates.Downloading : AppStates.Starting);
             }
           });
       });
@@ -255,6 +251,12 @@ export default function DownloadPage() {
                 icon: <AiOutlineCheck />,
               });
               setState(AppStates.Finished);
+
+              if(SettingsManager.isSetting('downloaderMode', ['autoSave'])) {
+                void saveFile(downloadable.content, downloadable.filename).then(() => {
+                  console.log('Auto downloaded')
+                })
+              }
             }
           );
         }
@@ -283,7 +285,7 @@ export default function DownloadPage() {
           leftIcon={<AiOutlineCloudDownload />}
           variant="outline"
           disabled={!downloadableFile}
-          onClick={postDownload}
+          onClick={savePackedFiles}
         >
           {downloadableFile
             ? `Download Packed ${downloadableFile.filename}`

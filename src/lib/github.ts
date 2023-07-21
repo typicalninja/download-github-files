@@ -83,7 +83,8 @@ export const fetchDirectoryViaTrees = async ({ username, repo, branch, dir }: Re
 
     const json = await response.json() as {
         message?: string;
-        tree: { path: string, type: string }[]
+        tree: { path: string, type: string }[];
+        truncated: boolean;
     };
     if(json.message) {
         throw new Error(`Api Returned error ${json.message}`);
@@ -95,7 +96,10 @@ export const fetchDirectoryViaTrees = async ({ username, repo, branch, dir }: Re
 		}
 	}
 
-    return files;
+    return {
+        fileList: files,
+        truncated: json.truncated
+    };
 }
 
 export const fetchFileContent = async (username: string, repo: string, branch: string, dir: string) => {

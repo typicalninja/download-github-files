@@ -89,7 +89,10 @@ async function LifeCycleFetchFiles(resolved: ResolvedGithubData): Promise<File[]
   if (resolved.type === "blob") return [{ dir: resolved.dir, downloaded: false, failed: false }];
   else {
     const files = await fetchDirectoryViaTrees(resolved)
-    return files;
+    if(files.truncated) {
+      console.log(`Repository is too large, attempting to download via content Api`)
+    }
+    return files.fileList;
   }
 }
 
@@ -240,14 +243,9 @@ export default function DownloadPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    Lifecycle().catch(() => {
-      /** No error expected */
-    });
-  }, [Lifecycle]);
-
   return (
     <Flex direction="column" gap="md">
+      {/** Info panel */}
       {repoInfo !== null ? (
         <DownloaderInfoComponent
           resolvedData={resolved}
@@ -258,7 +256,13 @@ export default function DownloadPage() {
         <Loader />
       )}
       <Divider />
-      <Button leftIcon={<AiOutlineCloudDownload />} variant="outline" disabled={!(downloadableFile)} onClick={postDownload}>{downloadableFile ? `Download ${downloadableFile.filename}` : 'Download not ready'}</Button>
+      {/** Controls */}
+      <Flex gap="md">
+        <Button leftIcon={<AiOutlineCloudDownload />} variant="outline" disabled={!(downloadableFile)} onClick={postDownload}>{downloadableFile ? `Download ${downloadableFile.filename}` : 'Download not ready'}</Button>
+        <Button leftIcon={<AiOutlineCloudDownload />} variant="outline" disabled={!(downloadableFile)} onClick={postDownload}>{downloadableFile ? `Download ${downloadableFile.filename}` : 'Download not ready'}</Button>
+      </Flex>
+      <Divider />
+      {/** Data panel */}
       <Table highlightOnHover withBorder withColumnBorders>
         <thead>
           <tr>

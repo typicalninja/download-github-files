@@ -79,7 +79,7 @@ export default function SettingsDrawer() {
         Updating this value requires a full page refresh to take effect
       </Text>
       <Anchor target="_blank" href="https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo">
-        Click here to generate a token
+        Click here to generate a personal access token
       </Anchor>
       <Divider />
       <Select

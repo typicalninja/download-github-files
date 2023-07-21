@@ -13,11 +13,12 @@ import {
   Loader,
   Anchor,
   Divider,
+  Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useCallback, useEffect, useState } from "react";
 
-import { AiOutlineClose, AiOutlineCheck, AiOutlineWarning } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineCheck, AiOutlineWarning, AiOutlineCloudDownload } from "react-icons/ai";
 
 // utils
 import {
@@ -26,6 +27,7 @@ import {
   ExtendedFileWithContent,
   GithubRepo,
   ResolvedGithubData,
+  DownloadableFile,
 } from "../lib/constants";
 import { blobToArrayBuffer } from "../lib/util";
 
@@ -126,13 +128,13 @@ async function LifeCycleDownloadFiles(
 }
 
 
-async function LifeCycleSaveFiles(filesWithBlobs: ExtendedFileWithContent[], filename: string) {
+async function LifeCycleSaveFiles(filesWithBlobs: ExtendedFileWithContent[], filename: string): Promise<DownloadableFile> {
     if(filesWithBlobs.length === 1) {
         // one file should be individually downloaded without being zipped
         const file = filesWithBlobs[0];
         const fileWithoutMain = file.dir.split('/').slice(1).join('/') || file.dir;
         await saveFile(file.blob, fileWithoutMain)
-        return;
+        return { filename: fileWithoutMain, content: file.blob };
     }
     const zipDirectory = {} as Zippable
     for(const file of filesWithBlobs) {
@@ -149,6 +151,8 @@ async function LifeCycleSaveFiles(filesWithBlobs: ExtendedFileWithContent[], fil
     }
     const zipped = await asyncCreateZip()
     await saveFile(zipped, `${filename}.zip`)
+
+    return { content: zipped, filename: `${filename}.zip`};
 }
 
 /** Main */
@@ -159,6 +163,10 @@ export default function DownloadPage() {
   const [repoInfo, setRepoInfo] = useState<null | GithubRepo>(null);
   // holds current file data
   const [fileInfo, setFileInfo] = useState<File[]>([]);
+  const [downloadableFile, setDownloadable] = useState<DownloadableFile | null>(null);
+
+  const postDownload = () => { if(downloadableFile) { void saveFile(downloadableFile.content, downloadableFile.filename).then(() => console.log(`Manual download done`)); }}
+
   const resolved = parseGithubResolver(searchParams.get("resolve") as string);
   // resolver failed, error
   if (!resolved)
@@ -207,7 +215,6 @@ export default function DownloadPage() {
     );
 
     console.log(`LifeCycleDownloadFiles: Success`);
-    console.log(downloadedFiles);
     setFileInfo(
       downloadedFiles.map((c) => ({
         dir: c.dir,
@@ -219,7 +226,9 @@ export default function DownloadPage() {
 
     // the folder name
     const folderName = resolved.dir.split('/')[0]
-    await LifeCycleSaveFiles(downloadedFiles, folderName);
+    const downloadable = await LifeCycleSaveFiles(downloadedFiles, folderName);
+    // download after initial
+    setDownloadable(downloadable);
     setState(AppStates.Finished);
 
     notifications.show({
@@ -249,6 +258,7 @@ export default function DownloadPage() {
         <Loader />
       )}
       <Divider />
+      <Button leftIcon={<AiOutlineCloudDownload />} variant="outline" disabled={!(downloadableFile)} onClick={postDownload}>{downloadableFile ? `Download ${downloadableFile.filename}` : 'Download not ready'}</Button>
       <Table highlightOnHover withBorder withColumnBorders>
         <thead>
           <tr>

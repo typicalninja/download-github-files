@@ -1,7 +1,8 @@
 export const links = {
   personalSite: "https://typical.gq",
   sourceRepo: "https://github.com/typicalninja493/download-github-files",
-  analytics: "https://umami.typical.gq/share/PTgmfMcnZlnqokYT/Download%20Github%20files"
+  analytics:
+    "https://umami.typical.gq/share/PTgmfMcnZlnqokYT/Download%20Github%20files",
 };
 
 export enum AppStates {
@@ -32,4 +33,9 @@ export interface ResolvedGithubData {
   type: string;
   dir: string;
   branch: string;
+}
+
+export interface DownloadableFile {
+  filename: string;
+  content: Blob | Uint8Array;
 }

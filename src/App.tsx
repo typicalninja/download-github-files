@@ -37,6 +37,7 @@ const router = createBrowserRouter(
       ],
     },
   ],
+  {basename: '/download-github-files'}
 );
 
 export default function App() {

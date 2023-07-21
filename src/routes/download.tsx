@@ -351,19 +351,6 @@ export default function DownloadPage() {
           </tr>
         </thead>
         <tbody>
-          {fileInfo.length <= 0 && (
-            <tr>
-              <td>
-                <Skeleton height={8} mt={6} width="70%" radius="xl" />
-              </td>
-              <td>
-                <Skeleton height={8} mt={6} width="70%" radius="xl" />
-              </td>
-              <td>
-                <Skeleton height={8} mt={6} width="70%" radius="xl" />
-              </td>
-            </tr>
-          )}
           {fileInfo.map((file, i) => (
             <tr key={i}>
               <td>{i}</td>

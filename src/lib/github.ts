@@ -1,8 +1,25 @@
 import DownloaderSettingsManager, { SettingsManager } from "./Settings";
-import { GithubRepo, ResolvedRepoData, File, ExtendedFileWithContent } from "./constants";
+import { GithubRepo, ResolvedRepoData, File, ExtendedFileWithContent, GithubUser } from "./constants";
 import { ErrorNotification, WarningNotification } from "./notifications";
 import pMap from "p-map";
 import pRetry from "p-retry";
+
+/**
+ * Due to how our class is structured this is a must
+ * @returns 
+ */
+export const fetchCurrentTokenUser = async (): Promise<GithubUser> => {
+  const token = SettingsManager.getSetting("token");
+  const tokenEnabled =
+  token &&
+  SettingsManager.isSetting("tokenEnabled", [true]);
+
+  if(!tokenEnabled) throw new Error(`Token is not present or is disabled`);
+  const request = await fetch('https://api.github.com/user', { headers: { Authorization: `Bearer ${token}` } });
+  if(!request.ok) throw new Error(`Token is Invalid received code ${request.status}`)
+  const json = await request.json() as GithubUser;
+  return json;
+}
 
 /** Temp file */
 export class RepositoryDownloader {

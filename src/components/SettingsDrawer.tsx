@@ -1,8 +1,8 @@
 import { Anchor, Divider, Flex, TextInput, Text, Select, Button, Checkbox } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useEffect,  useState } from "react";
 import { AiFillGithub } from "react-icons/ai";
 import { type DownloaderSettings, SettingsManager as settings } from "../lib/Settings";
-import { fetchCurrentUser } from "../lib/github";
+import { fetchCurrentTokenUser } from "../lib/github";
 import { notifications } from "@mantine/notifications";
 
 export default function SettingsDrawer() {
@@ -17,7 +17,7 @@ export default function SettingsDrawer() {
 
   const testToken = (): Promise<boolean> => {
    return new Promise((resolve) => {
-    void fetchCurrentUser().then((user) => {
+    fetchCurrentTokenUser().then((user) => {
       notifications.show({
         message: `Verified Token belonging to user ${user.login}`,
         title: 'Successful Verification of token',

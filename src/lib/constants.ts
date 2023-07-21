@@ -34,9 +34,6 @@ export interface GithubUser {
   login: string;
 }
 
-/**
- * !Incremental rename to resolvedGithubData
- */
 export interface ResolvedRepoData {
   username: string;
   repo: string;

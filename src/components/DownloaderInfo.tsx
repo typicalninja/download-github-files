@@ -1,5 +1,5 @@
 import { Flex, TextInput } from "@mantine/core";
-import type { GithubRepo, ResolvedGithubData } from "../lib/constants";
+import type { GithubRepo, ResolvedRepoData } from "../lib/constants";
 
 // icons
 import { AiOutlineCloudDownload, AiFillLock } from "react-icons/ai";
@@ -17,7 +17,7 @@ export default function DownloaderInfoComponent({
   resolvedData,
   githubData,
   fileLength
-}: {resolvedData: ResolvedGithubData, githubData: GithubRepo, fileLength: number}) {
+}: {resolvedData: ResolvedRepoData, githubData: GithubRepo, fileLength: number}) {
   const { full_name, description, private: privateRepo } = githubData;
   const { branch } = resolvedData;
   return (

@@ -6,7 +6,7 @@ export interface DownloaderSettings {
 }
 
 export const defaultSettings: DownloaderSettings = {
-    downloaderMode: 'autoFetch',
+    downloaderMode: 'autoSave',
     token: '',
     lastDirectory: '',
     tokenSuggestion: null

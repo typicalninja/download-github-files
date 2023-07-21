@@ -32,7 +32,7 @@ export default function Index() {
     const ghToken = settings.getSetting('token')
     const lastSuggestion = settings.getSetting('tokenSuggestion')
     if (!ghToken) {
-      //if(lastSuggestion && (lastSuggestion + (60000 * 5)) > Date.now()) return;
+      if(lastSuggestion && (lastSuggestion + (600000)) > Date.now()) return;
       settings.setSetting('tokenSuggestion', Date.now());
       notifications.show({
         title: "Access Private repositories & Higher downloads limits",

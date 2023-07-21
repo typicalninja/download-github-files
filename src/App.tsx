@@ -6,7 +6,7 @@ import {
 
 import { Notifications } from "@mantine/notifications";
 
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { useColorScheme, useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -41,9 +41,10 @@ const router = createBrowserRouter(
 );
 
 export default function App() {
+  const preferredColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "user-theme-preference",
-    defaultValue: "dark",
+    defaultValue: preferredColorScheme,
     getInitialValueInEffect: true,
   });
 

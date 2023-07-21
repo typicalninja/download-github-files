@@ -1,10 +1,14 @@
-import { Flex, TextInput, Button, Title, Divider, Text } from "@mantine/core";
+import { Flex, TextInput, Button, Title, Divider, Text, Drawer } from "@mantine/core";
+// icons
 import { BsCloudDownload } from "react-icons/bs";
 import { AiFillFile } from "react-icons/ai";
+
+
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
+
 
 export default function Index() {
   const navigate = useNavigate();
@@ -22,15 +26,24 @@ export default function Index() {
     const savedDir = localStorage.getItem("savedDir");
     if (savedDir) form.setValues({ directoryLink: savedDir });
     // disable since, form changes when you type in the input, resulting in directoryLink Not changing
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Flex mih={200} gap="lg" justify="center" align="center" direction="column">
+    <Flex mih={200} gap="lg" justify="center" align="center" direction="column" m={5}>
+  
       <Title>Download Folders & Files from any* Github repository</Title>
       <Title order={5}>
-        Effortlessly and swiftly download <Text span c="teal">individual</Text> directories or files from <Text span c="blue"inherit fw={500}> Github </Text> in a snap.
-        Download the specific content you need without any hassle.
+        Effortlessly and swiftly download{" "}
+        <Text span c="teal">
+          individual
+        </Text>{" "}
+        directories or files from{" "}
+        <Text span c="blue" inherit fw={500}>
+          {" "}
+          Github{" "}
+        </Text>{" "}
+        in a snap. Download the specific content you need without any hassle.
       </Title>
       <Divider />
       <form onSubmit={form.onSubmit(onSubmit)}>
@@ -38,6 +51,7 @@ export default function Index() {
           placeholder="https://github.com/username/repo/blob/main/file.png"
           label="Directory Link"
           size="md"
+          width={20}
           withAsterisk
           required
           {...form.getInputProps("directoryLink")}
@@ -65,7 +79,9 @@ export default function Index() {
           </Button>
         </Flex>
       </form>
-      <Text fz="xs" c="red">* Does not support Private repositories</Text>
+      <Text fz="xs" c="red">
+        * Requires a custom token for private repositories
+      </Text>
     </Flex>
   );
 }

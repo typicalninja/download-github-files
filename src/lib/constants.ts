@@ -6,6 +6,7 @@ export const links = {
 };
 
 export enum AppStates {
+  Idle = "IDLE",
   Starting = "STARTING",
   Downloading = "DOWNLOADING",
   Finished = "FINISHED",
@@ -38,4 +39,12 @@ export interface ResolvedGithubData {
 export interface DownloadableFile {
   filename: string;
   content: Blob | Uint8Array;
+}
+
+
+export interface RateLimitData {
+  ratelimitlimit: 60
+  ratelimitRemaining: 54
+  ratelimitReset: 1689918160
+  ratelimitUsed: 6
 }

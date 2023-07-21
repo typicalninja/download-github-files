@@ -54,6 +54,11 @@ export const fetchRepo = async (username: string, repo: string): Promise<GithubR
     switch(response.status) {
         case 404:
             throw new Error(`Repository or User could not be found`)
+        case 429:
+        case 403: {
+            const header = response.headers.get('x-ratelimit-reset')
+            throw new Error(`Ip or token is rate limited, Reset on ${new Date(Number(header as string) * 1000).toISOString()}`)
+        }
         default:
             if(!response.ok) throw new Error(`Unknown Api Error ${response.status}`)
     }

@@ -6,7 +6,7 @@ only a small portion of the repository of a large repository. This tool allows y
 # ✨ Features
 
 * Elegant ui powered by [mantine](https://mantine.dev) 💻
-* Control panel to customize your experience ⚙️
+* [Control panel to customize your experience](#⚙️-settings-panel-overview) ⚙️
 * Fast downloads ⚡️
 * Automatic zip file generation 📦
 * Support downloading of private repositories 🔒
@@ -20,10 +20,11 @@ Click on any of the demo links to try it out.
 * [Download With Nested Directories](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/typicalninja493/tweets.ts/tree/main/docs)
 * [Download of large amount of files](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/umami-software/umami/tree/master/public/images/flags)
 
-# Settings Panel overview
+# ⚙️ Settings Panel overview
 
 ### Github token
 ![Settings Github token](./docs/settings.png)
+
 The downloader requires a personal access token to be added to the settings panel to view private repositories. this also allows you to have **Higher** api limits.
 
 > [Click here to generate a personal access token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo)
@@ -40,7 +41,7 @@ If all is good following notification should appear (if not check if your mistyp
 ![Settings Github notif](./docs/settingsNotif.png)
 
 
-### Downloader Mode
+### Downloader Modes
 
 There are currently 3 Downloader modes,
 
@@ -57,13 +58,13 @@ There are currently 3 Downloader modes,
 * This tool utilizes the GitHub API to retrieve file lists and their content. As with any API, there are limits. By default, the tool operates in ****Guest** mode, which may have lower API limits.
 
 * If you desire a higher API limit, [creating a GitHub personal token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo) and 
-[adding it to the settings panel](#settings-panel-overview) of the downloader **Remember to refresh the page** after adding the token.
+[adding it to the settings panel](#settings-panel-overview) of the downloader. **Remember to refresh the page** after adding the token.
 
 * For large repositories this api will try to download the content via a different strategy due to api limitation, however the amount of files downloaded may vary (it may also cost more in resources)
 
 ### Limitation on Private Repositories
 
-* The downloader requires a personal access token to be [added to the settings panel]((#settings-panel-overview)) to view private repository
+* The downloader requires a personal access token to be [added to the settings panel]((#settings-panel-overview)) to view any private repository
 
 > [Click here to generate a personal access token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo)
 
@@ -91,4 +92,5 @@ There are currently 3 Downloader modes,
 # License
 
 GNU General Public License v3.0 or later
+
 See [LICENSE](./LICENSE) to see the full text.

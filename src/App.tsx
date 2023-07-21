@@ -8,7 +8,7 @@ import { Notifications } from "@mantine/notifications";
 
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 
-import { createHashRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // root
 import Root from "./routes/root.tsx";
@@ -19,7 +19,7 @@ import ErrorPage from "./error.tsx";
 import Index from "./routes/index.tsx";
 import DownloadPage from "./routes/download.tsx";
 
-const router = createHashRouter(
+const router = createBrowserRouter(
   [
     {
       path: "/",

@@ -9,9 +9,9 @@ export enum AppStates {
   Idle = "IDLE",
   Starting = "STARTING",
   Downloading = "DOWNLOADING",
-  Finished = "FINISHED",
   Zipping = "ZIPPING",
-  Resolving = "RESOLVING",
+  Finished = "FINISHED",
+  //Resolving = "RESOLVING",
 }
 
 export interface File {

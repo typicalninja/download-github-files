@@ -1,14 +1,13 @@
-import { Flex, TextInput, Button, Title, Divider, Text, Drawer } from "@mantine/core";
+import { Flex, TextInput, Button, Title, Divider, Text } from "@mantine/core";
 // icons
 import { BsCloudDownload } from "react-icons/bs";
 import { AiFillFile } from "react-icons/ai";
-
 
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
-
+import { notifications } from "@mantine/notifications";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -25,13 +24,29 @@ export default function Index() {
   useEffect(() => {
     const savedDir = localStorage.getItem("savedDir");
     if (savedDir) form.setValues({ directoryLink: savedDir });
+
+    // in index check for github token and if not found suggest it
+    const ghToken = localStorage.getItem("requestToken");
+    if (!ghToken)
+      notifications.show({
+        title: "Access Private repositories & Higher downloads limits",
+        message: `If you want higher downloads limits & access to private repositories, add a Github token using the cog wheel in the header`,
+        id: "requestTokenNotification",
+        autoClose: false,
+      });
     // disable since, form changes when you type in the input, resulting in directoryLink Not changing
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Flex mih={200} gap="lg" justify="center" align="center" direction="column" m={5}>
-  
+    <Flex
+      mih={200}
+      gap="lg"
+      justify="center"
+      align="center"
+      direction="column"
+      m={5}
+    >
       <Title>Download Folders & Files from any* Github repository</Title>
       <Title order={5}>
         Effortlessly and swiftly download{" "}

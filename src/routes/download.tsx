@@ -14,11 +14,10 @@ import {
   Anchor,
   Divider,
   Button,
-  Drawer,
-  TextInput,
+  Center,
+  FileInput,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useDisclosure } from "@mantine/hooks";
 import { useCallback, useEffect, useState } from "react";
 
 // icons
@@ -27,9 +26,7 @@ import {
   AiOutlineCheck,
   AiOutlineWarning,
   AiOutlineCloudDownload,
-  AiFillGithub,
 } from "react-icons/ai";
-import { BiSolidCog } from "react-icons/bi";
 
 // utils
 import {
@@ -40,7 +37,7 @@ import {
   ResolvedGithubData,
   DownloadableFile,
 } from "../lib/constants";
-import { blobToArrayBuffer } from "../lib/util";
+import { blobToArrayBuffer, getSaveFiles } from "../lib/util";
 
 import DownloaderInfoComponent from "../components/DownloaderInfo";
 
@@ -51,7 +48,6 @@ import { zip, type Zippable } from "fflate";
 // perf
 import pMap from "p-map";
 import pRetry from "p-retry";
-import SettingsDrawer from "../components/SettingsDrawer";
 
 /**
  * Lifecycle to get repo data
@@ -181,36 +177,6 @@ async function LifeCycleDownloadFiles(
   return fileData;
 }
 
-async function LifeCycleSaveFiles(
-  filesWithBlobs: ExtendedFileWithContent[],
-  filename: string
-): Promise<DownloadableFile> {
-  if (filesWithBlobs.length === 1) {
-    // one file should be individually downloaded without being zipped
-    const file = filesWithBlobs[0];
-    const fileWithoutMain = file.dir.split("/").slice(1).join("/") || file.dir;
-    await saveFile(file.blob, fileWithoutMain);
-    return { filename: fileWithoutMain, content: file.blob };
-  }
-  const zipDirectory = {} as Zippable;
-  for (const file of filesWithBlobs) {
-    const dir = file.dir.split("/").slice(1).join("/");
-    zipDirectory[dir] = await blobToArrayBuffer(file.blob);
-  }
-  function asyncCreateZip(): Promise<Uint8Array> {
-    return new Promise((resolve, reject) => {
-      zip(zipDirectory, (err, data) => {
-        if (err) return reject(err);
-        return resolve(data);
-      });
-    });
-  }
-  const zipped = await asyncCreateZip();
-  await saveFile(zipped, `${filename}.zip`);
-
-  return { content: zipped, filename: `${filename}.zip` };
-}
-
 /** Main */
 export default function DownloadPage() {
   const [searchParams] = useSearchParams();
@@ -268,10 +234,10 @@ export default function DownloadPage() {
 
     // the folder name
     const folderName = resolved.dir.split("/")[0];
-    const downloadable = await LifeCycleSaveFiles(downloadedFiles, folderName);
+    //const downloadable = await LifeCycleSaveFiles(downloadedFiles, folderName);
     // download after initial
-    setDownloadable(downloadable);
-    setState(AppStates.Finished);
+    //  setDownloadable(downloadable);
+    //  setState(AppStates.Finished);
 
     notifications.show({
       title: `You download is complete`,
@@ -285,7 +251,7 @@ export default function DownloadPage() {
   // run on start
   useEffect(() => {
     // if idle fetch all files and repo data
-    if (state !== AppStates.Idle) {
+    if (state === AppStates.Idle) {
       // on start get repo data
       void LifeCycleGetRepoData(resolved).then((repoData) => {
         setRepoInfo(repoData);
@@ -293,14 +259,51 @@ export default function DownloadPage() {
         // check if repo data was successfully fetched if not might indicate that we should
         // not continue requesting data (ratelimit)
         if (repoData)
-          void LifeCycleFetchFiles(resolved).then((files) =>
-            setFileInfo(files)
-          );
+          void LifeCycleFetchFiles(resolved).then((files) => {
+            setFileInfo(files);
+            if (files.length) {
+              // set state to starting so the download button appears
+              // TODO If auto download is available set to immediate Download state
+              setState(AppStates.Starting);
+            }
+          });
       });
-
-      setState(AppStates.Starting);
     }
-  }, [state]);
+    // if state changed to downloading then download must begin
+    else if (state === AppStates.Downloading) {
+      if (fileInfo.length <= 0)
+        return notifications.show({
+          message: `No Files available to be downloaded`,
+        });
+      console.log(`Downloading`);
+      void LifeCycleDownloadFiles(fileInfo, resolved).then(
+        (downloadedFiles) => {
+          setFileInfo(
+            downloadedFiles.map((c) => ({
+              dir: c.dir,
+              downloaded: c.downloaded,
+              failed: c.failed,
+            }))
+          );
+          setState(AppStates.Zipping);
+          const folderName = resolved.dir.split("/")[0];
+          // convert the files into savable files
+          void getSaveFiles(downloadedFiles, folderName).then(
+            (downloadable) => {
+              setDownloadable(downloadable);
+              notifications.show({
+                title: `You download is complete`,
+                message: `Successfully Downloaded ${downloadedFiles.length} file(s), Click Download to finish`,
+                color: "teal",
+                icon: <AiOutlineCheck />,
+              });
+              setState(AppStates.Finished);
+            }
+          );
+        }
+      );
+    }
+  }, [state, fileInfo]);
 
   return (
     <Flex direction="column" gap="md">
@@ -312,7 +315,9 @@ export default function DownloadPage() {
           fileLength={fileInfo.length}
         />
       ) : (
-        <Loader />
+        <Center>
+          <Loader variant="bars" />
+        </Center>
       )}
       <Divider />
       {/** Controls */}
@@ -331,7 +336,7 @@ export default function DownloadPage() {
           <Button
             leftIcon={<AiOutlineCloudDownload />}
             variant="light"
-            onClick={postDownload}
+            onClick={() => setState(AppStates.Downloading)}
             disabled={!fileInfo.length}
           >
             {fileInfo.length
@@ -347,7 +352,7 @@ export default function DownloadPage() {
           <tr>
             <th>No</th>
             <th>File location</th>
-            <th>Downloaded</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -357,14 +362,22 @@ export default function DownloadPage() {
               <td>
                 <Anchor
                   target="_blank"
-                  href={`https://github.com/${resolved.username}/${resolved.repo}/blob/${resolved.branch}/${resolved.dir}`}
+                  href={`https://github.com/${resolved.username}/${resolved.repo}/blob/${resolved.branch}/${file.dir}`}
                 >
                   {file.dir}
                 </Anchor>
               </td>
               <td>
+                {state === AppStates.Starting && !file.downloaded && (
+                  <Text fw={500} color="yellow">
+                    <Loader size="md" variant="dots" color="yellow" /> Waiting
+                    (Click Fetch to start)
+                  </Text>
+                )}
                 {state === AppStates.Downloading && !file.downloaded && (
-                  <Loader />
+                  <Text fw={500} color="violet">
+                    <Loader color="violet" variant="dots" /> Downloading
+                  </Text>
                 )}
                 {state === AppStates.Finished && file.downloaded && (
                   <Text fw={500} color="green">

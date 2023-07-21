@@ -34,14 +34,6 @@ export interface GithubUser {
   login: string;
 }
 
-export interface ResolvedGithubData {
-  username: string;
-  repo: string;
-  type: string;
-  directory: string;
-  branch: string;
-}
-
 /**
  * !Incremental rename to resolvedGithubData
  */
@@ -51,6 +43,7 @@ export interface ResolvedRepoData {
   type: string;
   branch: string;
   directory: string;
+  folder: string;
 }
 
 

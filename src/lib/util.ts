@@ -26,15 +26,15 @@ export async function getSaveFiles(
   if (filesWithBlobs.length === 1) {
     // one file should be individually downloaded without being zipped
     const file = filesWithBlobs[0];
-    const fileWithoutMain = file.dir.split("/").slice(1).join("/") || file.dir;
+    const fileWithoutMain = file.path.replace(`${filename}/`, '') || "downloaded.txt";
     return { filename: fileWithoutMain, content: file.blob };
   }
 
   // multiple files, create a zip file
   const zipDirectory = {} as Zippable;
   for (const file of filesWithBlobs) {
-    const dir = file.dir.split("/").slice(1).join("/");
-    zipDirectory[dir] = await blobToArrayBuffer(file.blob);
+    const filePath = file.path.replace(`${filename}/`, '')
+    zipDirectory[filePath] = await blobToArrayBuffer(file.blob);
   }
 
   const zipped = await asyncCreateZip(zipDirectory);

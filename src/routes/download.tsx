@@ -54,6 +54,9 @@ export default function DownloadPage() {
   const [downloadableFile, setDownloadable] = useState<DownloadableFile | null>(
     null
   );
+  const [animationsEnabled, setanimationsEnabled] = useState<boolean>(
+    true
+  );
 
   const downloader = useMemo(
     () => new RepositoryDownloader(searchParams.get("resolve") as string),
@@ -90,6 +93,7 @@ export default function DownloadPage() {
                     : AppStates.Starting
                 );
                 if (files.length > 100) {
+                  setanimationsEnabled(false)
                   WarningNotification(
                     `${files.length} Files found, this may take a while`,
                     "Large Directory Detected",
@@ -230,13 +234,13 @@ export default function DownloadPage() {
               <td>
                 {state === AppStates.Starting && !file.downloaded && (
                   <Text fw={500} color="yellow">
-                    <Loader size="md" variant="dots" color="yellow" /> Waiting
+                    {animationsEnabled && <Loader size="md" variant="dots" color="yellow" />} Waiting
                     (Click Fetch to start)
                   </Text>
                 )}
                 {state === AppStates.Downloading && !file.downloaded && (
                   <Text fw={500} color="violet">
-                    <Loader color="violet" variant="dots" /> Downloading
+                    {animationsEnabled && <Loader color="violet" variant="dots" />} Downloading
                   </Text>
                 )}
                 {state === AppStates.Finished && file.downloaded && (

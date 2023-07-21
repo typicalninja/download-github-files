@@ -6,6 +6,10 @@ import { AiOutlineCloudDownload, AiFillLock } from "react-icons/ai";
 import { GoRepo, GoGitBranch } from "react-icons/go";
 import { BiNote } from "react-icons/bi";
 
+
+import prettyBytes from 'pretty-bytes';
+
+
 /**
  *  Used to show the information at the top of the page
  * @param resolvedData
@@ -16,8 +20,8 @@ import { BiNote } from "react-icons/bi";
 export default function DownloaderInfoComponent({
   resolvedData,
   githubData,
-  fileLength
-}: {resolvedData: ResolvedRepoData, githubData: GithubRepo, fileLength: number}) {
+  files
+}: {resolvedData: ResolvedRepoData, githubData: GithubRepo, files: { count: number, size: number }}) {
   const { full_name, description, private: privateRepo } = githubData;
   const { branch } = resolvedData;
   return (
@@ -51,7 +55,7 @@ export default function DownloaderInfoComponent({
         <TextInput
           placeholder=""
           withAsterisk
-          value={`Downloading ${fileLength} File(s)`}
+          value={`Downloading ${files.count} File(s) of total size ${prettyBytes(files.size)}`}
           readOnly
           icon={<AiOutlineCloudDownload />}
         />

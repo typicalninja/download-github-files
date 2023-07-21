@@ -114,7 +114,6 @@ export class RepositoryDownloader {
         }
         catch(err) {
             console.log(`BulkDownload: Download of file ${file.path} Failed @`, err)
-            fileContent.failed = true;
             ErrorNotification(`File ${file.path} Failed to download (Check console)`, 'File Failed to download', false)
         }
         fileData.push(fileContent);
@@ -157,7 +156,7 @@ export class RepositoryDownloader {
       | {
           message?: string;
         }
-      | { name: string; path: string; git_url: string; type: "dir" | "file" }[];
+      | { name: string; path: string; git_url: string; type: "dir" | "file"; size: number }[];
 
     if (!Array.isArray(jsonResponse)) {
       // json is a object
@@ -178,7 +177,7 @@ export class RepositoryDownloader {
             path: item.path,
             url: item.git_url,
             downloaded: false,
-            failed: false,
+            size: item.size
           });
         } else if (item.type === "dir") {
           additionalRequests.push(item.path);
@@ -214,7 +213,7 @@ export class RepositoryDownloader {
 
     const json = (await response.json()) as {
       message?: string;
-      tree: { path: string; type: string; url: string }[];
+      tree: { path: string; type: string; url: string; size: number }[];
       truncated: boolean;
     };
 
@@ -233,7 +232,7 @@ export class RepositoryDownloader {
           path: item.path,
           url: item.url,
           downloaded: false,
-          failed: false,
+          size: item.size
         });
       }
     }

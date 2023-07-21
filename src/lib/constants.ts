@@ -18,7 +18,8 @@ export interface File {
   /** Path of this file */
   path: string;
   downloaded: boolean;
-  failed: boolean;
+  /** Size in bytes */
+  size: number;
   url: string;
 }
 

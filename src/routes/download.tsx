@@ -26,6 +26,7 @@ import {
   DownloadableFile,
 } from "../lib/constants";
 import { getSaveFiles } from "../lib/util";
+import prettyBytes from 'pretty-bytes';
 
 import DownloaderInfoComponent from "../components/DownloaderInfo";
 
@@ -134,7 +135,7 @@ export default function DownloadPage() {
             path: c.path,
             url: c.url,
             downloaded: c.downloaded,
-            failed: c.failed,
+            size: c.size
           }))
         );
         setState(AppStates.Zipping);
@@ -172,7 +173,7 @@ export default function DownloadPage() {
         <DownloaderInfoComponent
           resolvedData={downloader.resolved}
           githubData={repoInfo}
-          fileLength={fileInfo.length}
+          files={{ count: fileInfo.length, size: fileInfo.reduce((a, b) => a + b.size, 0)}}
         />
       ) : (
         <Center>
@@ -212,6 +213,7 @@ export default function DownloadPage() {
           <tr>
             <th>No</th>
             <th>File location</th>
+            <th>Size</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -231,6 +233,7 @@ export default function DownloadPage() {
                   {file.path}
                 </Anchor>
               </td>
+              <td>{prettyBytes(file.size)}</td>
               <td>
                 {state === AppStates.Starting && !file.downloaded && (
                   <Text fw={500} color="yellow">
@@ -243,24 +246,26 @@ export default function DownloadPage() {
                     {animationsEnabled && <Loader color="violet" variant="dots" />} Downloading
                   </Text>
                 )}
-                {state === AppStates.Finished && file.downloaded && (
+                {state === AppStates.Finished && (file.downloaded ? (
                   <Text fw={500} color="green">
                     <AiOutlineCheck /> Downloaded
                   </Text>
-                )}
-                {state === AppStates.Zipping && file.downloaded && (
+                ) : (
+                <Text fw={500} c="red">
+                  <AiOutlineClose />{" "}
+                  Error downloading
+                </Text>
+                ))}
+                {state === AppStates.Zipping && (file.downloaded ? (
                   <Text fw={500} color="teal.8">
                     <AiOutlineCheck /> Zipping
                   </Text>
-                )}
-                {file.failed && (
-                  <Flex align="center">
+                ): (
+                  <Text fw={500} c="red">
                     <AiOutlineClose />{" "}
-                    <Text fw={500} c="red">
-                      Error downloading
-                    </Text>
-                  </Flex>
-                )}
+                    Error downloading
+                </Text>
+                ))}
               </td>
             </tr>
           ))}

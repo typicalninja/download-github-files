@@ -15,7 +15,8 @@ export enum AppStates {
 }
 
 export interface File {
-  dir: string;
+  /** Path of this file */
+  path: string;
   downloaded: boolean;
   failed: boolean;
   url: string;
@@ -37,7 +38,7 @@ export interface ResolvedGithubData {
   username: string;
   repo: string;
   type: string;
-  directoryOrFile: string;
+  directory: string;
   branch: string;
 }
 
@@ -49,7 +50,7 @@ export interface ResolvedRepoData {
   repo: string;
   type: string;
   branch: string;
-  directoryOrFile: string;
+  directory: string;
 }
 
 

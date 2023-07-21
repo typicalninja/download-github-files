@@ -62,13 +62,13 @@ export default function Index() {
       direction="column"
       m={5}
     >
-      <Title>Download Folders & Files from any* Github repository</Title>
+      <Title>Download Directories from any* Github repository</Title>
       <Title order={5}>
         Effortlessly and swiftly download{" "}
         <Text span c="teal">
           individual
         </Text>{" "}
-        directories or files from{" "}
+        directories from{" "}
         <Text span c="blue" inherit fw={500}>
           {" "}
           Github{" "}

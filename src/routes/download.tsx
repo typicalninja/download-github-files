@@ -76,7 +76,8 @@ async function LifeCycleGetRepoData({ username, repo }: ResolvedGithubData) {
       title: "Repo discovery Failed",
       message: (err as Error).message || "Unknown Error",
       loading: false,
-      withCloseButton: true,
+      withCloseButton: false,
+      autoClose: 20000,
       color: "red",
       icon: <AiOutlineClose />,
     });
@@ -146,7 +147,8 @@ async function LifeCycleFetchFiles(
  */
 async function LifeCycleDownloadFiles(
   files: File[],
-  { username, repo, branch }: ResolvedGithubData
+  repo: GithubRepo,
+  resolved: ResolvedGithubData
 ): Promise<ExtendedFileWithContent[]> {
   const fileData: ExtendedFileWithContent[] = [];
   const fetchFile = async (file: File) => {
@@ -154,7 +156,7 @@ async function LifeCycleDownloadFiles(
     try {
       // const data = await fetchFileContent(username, repo, branch, file.dir);
       const data = await pRetry(
-        () => fetchFileContent(username, repo, branch, file.dir),
+        () => fetchFileContent(repo, resolved, file),
         { retries: 4 }
       );
       console.log(`Download successful for file: ${file.dir}`);
@@ -224,16 +226,19 @@ export default function DownloadPage() {
     }
     // if state changed to downloading then download must begin
     else if (state === AppStates.Downloading) {
+      if(!repoInfo) throw new Error(`Internal Error, Repo is not discovered yet!`)
       if (fileInfo.length <= 0)
         return notifications.show({
           message: `No Files available to be downloaded`,
         });
       console.log(`Downloading`);
-      void LifeCycleDownloadFiles(fileInfo, resolved).then(
+      void LifeCycleDownloadFiles(fileInfo, repoInfo, resolved).then(
         (downloadedFiles) => {
+          if(!downloadedFiles.length) return notifications.show({ title: `Download failed`, message: `Check console for more details, file a bug report if your sure this is not intended`, color: 'red' })
           setFileInfo(
             downloadedFiles.map((c) => ({
               dir: c.dir,
+              url: c.url,
               downloaded: c.downloaded,
               failed: c.failed,
             }))

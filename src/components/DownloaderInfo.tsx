@@ -2,7 +2,7 @@ import { Flex, TextInput } from "@mantine/core";
 import type { GithubRepo, ResolvedGithubData } from "../lib/constants";
 
 // icons
-import { AiOutlineCloudDownload } from "react-icons/ai";
+import { AiOutlineCloudDownload, AiFillLock } from "react-icons/ai";
 import { GoRepo, GoGitBranch } from "react-icons/go";
 import { BiNote } from "react-icons/bi";
 
@@ -18,7 +18,7 @@ export default function DownloaderInfoComponent({
   githubData,
   fileLength
 }: {resolvedData: ResolvedGithubData, githubData: GithubRepo, fileLength: number}) {
-  const { full_name, description } = githubData;
+  const { full_name, description, private: privateRepo } = githubData;
   const { branch } = resolvedData;
   return (
     <Flex direction="column" gap="md">
@@ -27,7 +27,7 @@ export default function DownloaderInfoComponent({
           placeholder="Loading..."
           value={full_name}
           readOnly
-          icon={<GoRepo />}
+          icon={privateRepo ? <AiFillLock /> : <GoRepo />}
         />
       </span>
       <span>

@@ -62,7 +62,7 @@ export default function App() {
         withGlobalStyles
         withNormalizeCSS
       >
-        <Notifications position="top-right" />
+        <Notifications position="bottom-center" />
         <RouterProvider router={router} />
       </MantineProvider>
     </ColorSchemeProvider>

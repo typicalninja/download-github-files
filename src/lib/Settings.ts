@@ -1,12 +1,14 @@
 export interface DownloaderSettings {
     token?: string;
+    tokenEnabled: boolean;
     downloaderMode: 'autoFetch' | 'autoFetchAnDownload' | 'autoSave';
     lastDirectory: string;
-    tokenSuggestion: number | null
+    tokenSuggestion: number | null;
 }
 
 export const defaultSettings: DownloaderSettings = {
     downloaderMode: 'autoSave',
+    tokenEnabled: true,
     token: '',
     lastDirectory: '',
     tokenSuggestion: null

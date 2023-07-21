@@ -18,6 +18,7 @@ export interface File {
   dir: string;
   downloaded: boolean;
   failed: boolean;
+  url: string;
 }
 
 export type ExtendedFileWithContent = File & { blob: Blob };
@@ -26,6 +27,10 @@ export interface GithubRepo {
   private?: boolean;
   full_name: string;
   description: string;
+}
+
+export interface GithubUser {
+  login: string;
 }
 
 export interface ResolvedGithubData {

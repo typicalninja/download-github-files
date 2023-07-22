@@ -174,17 +174,12 @@ export default function DownloadPage() {
   return (
     <Flex direction="column" gap="md">
       {/** Info panel */}
-      {downloader.resolved !== null && repoInfo ? (
-        <DownloaderInfoComponent
+      <DownloaderInfoComponent
           resolvedData={downloader.resolved}
           githubData={repoInfo}
+          loading={!(downloader.resolved !== null && repoInfo)}
           files={{ count: fileInfo.length, size: fileInfo.reduce((a, b) => a + b.size, 0)}}
-        />
-      ) : (
-        <Center>
-          <Loader variant="bars" />
-        </Center>
-      )}
+      />
       <Divider />
       {/** Controls */}
       <Flex gap="md">

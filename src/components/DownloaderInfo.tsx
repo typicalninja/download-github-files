@@ -1,4 +1,4 @@
-import { Flex, TextInput } from "@mantine/core";
+import { Flex, TextInput, LoadingOverlay, Box } from "@mantine/core";
 import type { GithubRepo, ResolvedRepoData } from "../lib/constants";
 
 // icons
@@ -19,25 +19,26 @@ import prettyBytes from 'pretty-bytes';
 export default function DownloaderInfoComponent({
   resolvedData,
   githubData,
-  files
-}: {resolvedData: ResolvedRepoData, githubData: GithubRepo, files: { count: number, size: number }}) {
-  const { full_name, private: privateRepo } = githubData;
-  const { branch, directory } = resolvedData;
+  files,
+  loading
+}: {resolvedData: ResolvedRepoData | null; githubData: GithubRepo | null; loading: boolean; files: { count: number, size: number }}) {
   return (
-    <Flex direction="column" gap="md">
+    <Box pos="relative">
+      <LoadingOverlay  loaderProps={{ size: 'lg', color: 'blue', variant: 'bars' }} visible={loading} overlayBlur={2} />
+      <Flex direction="column" gap="sm">
       <span>
         <TextInput
           placeholder="Loading..."
-          value={full_name}
+          value={githubData?.full_name || 'Invalid Repo'}
           readOnly
-          icon={privateRepo ? <AiFillLock /> : <GoRepo />}
+          icon={githubData?.private ? <AiFillLock /> : <GoRepo />}
         />
       </span>
       <span>
         <TextInput
           placeholder="Loading..."
           icon={<GoGitBranch />}
-          value={branch || 'Invalid branch'}
+          value={resolvedData?.branch || 'Invalid branch'}
           readOnly
         />
       </span>
@@ -45,7 +46,7 @@ export default function DownloaderInfoComponent({
         <TextInput
           placeholder="Loading..."
           icon={<AiFillFolderOpen />}
-          value={directory || 'Invalid Directory'}
+          value={resolvedData?.directory || 'Invalid Directory'}
           readOnly
         />
       </span>
@@ -58,6 +59,7 @@ export default function DownloaderInfoComponent({
           icon={<AiOutlineCloudDownload />}
         />
       </span>
-    </Flex>
+      </Flex>
+    </Box>
   );
 }

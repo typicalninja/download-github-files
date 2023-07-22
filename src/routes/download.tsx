@@ -234,7 +234,7 @@ export default function DownloadPage() {
                     downloader?.resolved?.branch || ""
                   }/${file.path}`}
                 >
-                  {file.path}
+                  {file.path.replace(`${downloader.resolved?.directory as string}/`, '')}
                 </Anchor>
               </td>
               <td>{prettyBytes(file.size)}</td>

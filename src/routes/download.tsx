@@ -7,7 +7,6 @@ import {
   Anchor,
   Divider,
   Button,
-  Center,
   Pagination
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";

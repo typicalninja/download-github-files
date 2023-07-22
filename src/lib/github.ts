@@ -52,6 +52,7 @@ export class RepositoryDownloader {
       token &&
       this.SettingsManager.isSetting("tokenEnabled", [true]) &&
       useToken;
+    console.log(tokenEnabled)
     return fetch(
       url,
       tokenEnabled ? { headers: { Authorization: `Bearer ${token}` } } : {}
@@ -74,7 +75,7 @@ export class RepositoryDownloader {
     return response.blob();
   }
   async downloadPrivateFile(file: File) {
-    const response = await this.getUrl(file.url);
+    const response = await this.getUrl(file.url, this.repo?.private);
     if (!response.ok) {
         throw new Error(`Api Error of "${response.statusText}" while downloading private file ${file.path}`);
     }
@@ -90,8 +91,9 @@ export class RepositoryDownloader {
    * @returns 
    */
   async downloadFile(file: File) {
-    if (this.repo?.private) return await this.downloadPrivateFile(file)
-    else return await this.downloadPublicFile(file.path);
+   // if (this.repo?.private) return await this.downloadPrivateFile(file)
+   // else return await this.downloadPublicFile(file.path);
+   return await this.downloadPrivateFile(file)
   }
 
   /**
@@ -148,7 +150,7 @@ export class RepositoryDownloader {
 
     if (!response.ok) {
       throw new Error(
-        `Api Error ${response.statusText} While Discovering of Files in ${username}/${repo} [Via Content API]`
+        `Api Error ${response.status} While Discovering of Files in ${username}/${repo} [Via Content API]`
       );
     }
 
@@ -206,9 +208,26 @@ export class RepositoryDownloader {
     );
 
     if (!response.ok) {
-      throw new Error(
-        `Api Error ${response.statusText} While Discovering of Files in ${username}/${repo}`
-      );
+      switch (response.status) {
+        case 404:
+          throw new Error(`Repository or User could not be found`);
+        case 429:
+        case 403: {
+          const header = response.headers.get("x-ratelimit-reset");
+          throw new Error(
+            `Ip or token is rate limited, Reset on ${new Date(
+              Number(header as string) * 1000
+            ).toISOString()}`
+          );
+        }
+        case 401:
+          throw new Error(`Authentication Token is Expired or invalid`);
+        default:
+          if (!response.ok)
+          throw new Error(
+            `Api Error ${response.status} While Discovering of Files in ${username}/${repo}`
+          );
+      }
     }
 
     const json = (await response.json()) as {

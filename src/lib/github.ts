@@ -35,7 +35,7 @@ export class RepositoryDownloader {
     // if nothing can be resolved error
     if (!this.resolved)
       throw new TypeError(
-        `Invalid Url path, Must follow format: [/username/repositoryName/(tree | blob)/(branch)/[folder | file.js]]`
+        `Invalid Url path, Must follow format: [/username/repositoryName/tree/branch/folder`
       );
     this.SettingsManager = SettingsManager;
     this.repo = null;

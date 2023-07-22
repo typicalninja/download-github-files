@@ -344,7 +344,7 @@ export class RepositoryDownloader {
     const trimmedUrl = resolve
       .replace(/^https?:\/\/github\.com\//, "")
       .replace(/\/$/, "");
-    const urlParts = trimmedUrl.split("/");
+    const urlParts = trimmedUrl.split("/").filter((s) => s !== '');
     // under or = to 4 means it only upto (branch)
     // branch downloads already available using github
     if (urlParts.length <= 4) return null;

@@ -75,7 +75,7 @@ export class RepositoryDownloader {
     return response.blob();
   }
   async downloadPrivateFile(file: File) {
-    const response = await this.getUrl(file.url, this.repo?.private);
+    const response = await this.getUrl(file.url);
     if (!response.ok) {
         throw new Error(`Api Error of "${response.statusText}" while downloading private file ${file.path}`);
     }
@@ -91,9 +91,8 @@ export class RepositoryDownloader {
    * @returns 
    */
   async downloadFile(file: File) {
-   // if (this.repo?.private) return await this.downloadPrivateFile(file)
-   // else return await this.downloadPublicFile(file.path);
-   return await this.downloadPrivateFile(file)
+    if (this.repo?.private) return await this.downloadPrivateFile(file)
+    else return await this.downloadPublicFile(file.path);
   }
 
   /**

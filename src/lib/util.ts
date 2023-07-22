@@ -42,4 +42,21 @@ export async function getSaveFiles(
   return { content: zipped, filename: `${filename}.zip` };
 }
 
+/**
+ * Chunk a array
+ * from lodash.chunk
+ */
+export const chunkArray = <T>(InitialArray: T[], sizePerArray = 1) => {
+  // just safety incase we pass in a negative value by accident
+  sizePerArray = Math.max(sizePerArray, 0)
+  if(!InitialArray.length || !Array.isArray(InitialArray)) return [];
+  const chunked = new Array<T[]>();
+  // track the current chunk
+  let chunkIndex = 0;
+  let index = 0;
+  for(;index < InitialArray.length;) {
+    chunked[chunkIndex++] = InitialArray.slice(index, (index += sizePerArray))
+  }
 
+  return chunked;
+}

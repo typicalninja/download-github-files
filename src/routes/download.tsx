@@ -8,6 +8,7 @@ import {
   Divider,
   Button,
   Center,
+  Pagination
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 
@@ -25,7 +26,7 @@ import {
   GithubRepo,
   DownloadableFile,
 } from "../lib/constants";
-import { getSaveFiles } from "../lib/util";
+import { chunkArray, getSaveFiles } from "../lib/util";
 import prettyBytes from 'pretty-bytes';
 
 import DownloaderInfoComponent from "../components/DownloaderInfo";
@@ -58,6 +59,10 @@ export default function DownloadPage() {
   const [animationsEnabled, setanimationsEnabled] = useState<boolean>(
     true
   );
+
+  const [chunkPage, setPage] = useState(0)
+  const chunkedFiles = useMemo(() => chunkArray<File>(fileInfo, 5), [fileInfo])
+  const currentFiles = useMemo(() => chunkedFiles[chunkPage] || [], [chunkPage, chunkedFiles]);
 
   const downloader = useMemo(
     () => new RepositoryDownloader(searchParams.get("resolve") as string),
@@ -208,19 +213,18 @@ export default function DownloadPage() {
       </Flex>
       <Divider />
       {/** Data panel */}
+      <Flex direction="column" align="center" gap="md">
       <Table highlightOnHover withBorder withColumnBorders>
         <thead>
           <tr>
-            <th>No</th>
             <th>File location</th>
             <th>Size</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          {fileInfo.map((file, i) => (
+          {currentFiles.map((file, i) => (
             <tr key={i}>
-              <td>{i}</td>
               <td>
                 <Anchor
                   target="_blank"
@@ -271,6 +275,8 @@ export default function DownloadPage() {
           ))}
         </tbody>
       </Table>
+      <Pagination onChange={setPage} total={chunkedFiles.length - 1} />
+      </Flex>
     </Flex>
   );
 }

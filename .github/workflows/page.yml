@@ -1,4 +1,4 @@
-name: GhFetch App build & publish to github pages
+name: Build & publish the Downloader to github pages
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy GhFetch to GitHub Pages
+    name: Deploy Downloader to GitHub Pages
     runs-on: ubuntu-latest
     permissions:
       contents: write

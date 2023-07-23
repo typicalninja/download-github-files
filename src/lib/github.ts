@@ -178,7 +178,11 @@ export class RepositoryDownloader {
             path: item.path,
             url: item.git_url,
             downloaded: false,
-            size: item.size
+            size: item.size,
+            relativePath: item.path.replace(
+              `${this.resolved.directory}/`,
+              ""
+            )
           });
         } else if (item.type === "dir") {
           additionalRequests.push(item.path);
@@ -250,7 +254,11 @@ export class RepositoryDownloader {
           path: item.path,
           url: item.url,
           downloaded: false,
-          size: item.size
+          size: item.size,
+          relativePath: item.path.replace(
+            `${this.resolved.directory}/`,
+            ""
+          )
         });
       }
     }

@@ -17,6 +17,8 @@ export enum AppStates {
 export interface File {
   /** Path of this file */
   path: string;
+  /** Path without the requested folder path */
+  relativePath: string;
   downloaded: boolean;
   /** Size in bytes */
   size: number;

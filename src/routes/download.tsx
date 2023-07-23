@@ -8,7 +8,8 @@ import {
   Divider,
   Button,
   Pagination,
-  TextInput
+  TextInput,
+  Grid,
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 
@@ -19,7 +20,6 @@ import {
   AiOutlineCloudDownload,
 } from "react-icons/ai";
 
-
 // utils
 import {
   AppStates,
@@ -28,23 +28,22 @@ import {
   DownloadableFile,
 } from "../lib/constants";
 import { chunkArray, getSaveFiles } from "../lib/util";
-import prettyBytes from 'pretty-bytes';
+import prettyBytes from "pretty-bytes";
 
 import DownloaderInfoComponent from "../components/DownloaderInfo";
 
 // file related
 import saveFile from "save-file";
 
-
 import { SettingsManager } from "../lib/Settings";
 import { RepositoryDownloader } from "../lib/github";
+import { minimatch } from 'minimatch';
 
 import {
   ErrorNotification,
   SuccessNotification,
   WarningNotification,
 } from "../lib/notifications";
-
 
 /** Main */
 export default function DownloadPage() {
@@ -57,19 +56,31 @@ export default function DownloadPage() {
   const [downloadableFile, setDownloadable] = useState<DownloadableFile | null>(
     null
   );
-  const [animationsEnabled, setanimationsEnabled] = useState<boolean>(
-    true
-  );
+  const [animationsEnabled, setanimationsEnabled] = useState<boolean>(true);
 
   // for pagination
   const [chunkPage, setPage] = useState(0);
-  const [pathFiler, setPathFiler] = useState('')
+  const [pathFilter, setPathFilter] = useState("");
+  // following function may have huge performance issues
+  // best way to at least reduce them is using useMemo
   // check filters before chunking them
-  const filteredFiles = useMemo(() => pathFiler === '' ? fileInfo : fileInfo.filter(file => file.path.includes(pathFiler)), [fileInfo, pathFiler])
+  const filteredFiles = useMemo(
+    () =>
+      pathFilter === ""
+        ? fileInfo
+        : fileInfo.filter((file) => minimatch(file.relativePath, pathFilter, { matchBase: true, partial: true })),
+    [fileInfo, pathFilter]
+  );
   // use memo to insure this does not change unless new files get added
   // or page changes
-  const chunkedFiles = useMemo(() => chunkArray<File>(filteredFiles, 5), [filteredFiles])
-  const currentFiles = useMemo(() => chunkedFiles[Math.max(chunkPage - 1, 0)] || [], [chunkPage, chunkedFiles]);
+  const chunkedFiles = useMemo(
+    () => chunkArray<File>(filteredFiles, 5),
+    [filteredFiles]
+  );
+  const currentFiles = useMemo(
+    () => chunkedFiles[Math.max(chunkPage - 1, 0)] || [],
+    [chunkPage, chunkedFiles]
+  );
 
   const downloader = useMemo(
     () => new RepositoryDownloader(searchParams.get("resolve") as string),
@@ -106,7 +117,8 @@ export default function DownloadPage() {
                     : AppStates.Starting
                 );
                 if (files.length > 100) {
-                  setanimationsEnabled(false)
+                  // disable on large repositories or it may cause performance issues
+                  setanimationsEnabled(false);
                   WarningNotification(
                     `${files.length} Files found, this may take a while`,
                     "Large Directory Detected",
@@ -141,32 +153,43 @@ export default function DownloadPage() {
     }
     // handle download phase
     else if (state === AppStates.Downloading) {
-      void downloader.bulkDownloadFiles(fileInfo).then((downloaded) => {
-        setFileInfo(
-          downloaded.map((c) => ({
-            path: c.path,
-            url: c.url,
-            downloaded: c.downloaded,
-            size: c.size
-          }))
-        );
-        setState(AppStates.Zipping);
-        void getSaveFiles(
-          downloaded,
-          `${downloader.resolved?.folder || "downloaded"}`
-        ).then((downloadableFile) => {
-          setDownloadable(downloadableFile);
-          setState(AppStates.Finished);
-          if (SettingsManager.isSetting("downloaderMode", ["autoSave"])) {
-            void saveFile(
-              downloadableFile.content,
-              downloadableFile.filename
-            ).then(() => {
-              console.log("Auto downloaded");
-            });
-          }
+      downloader
+        .bulkDownloadFiles(filteredFiles)
+        .then((downloaded) => {
+          setFileInfo(
+            downloaded.map((c) => ({
+              path: c.path,
+              url: c.url,
+              downloaded: c.downloaded,
+              size: c.size,
+              relativePath: c.relativePath
+            }))
+          );
+          setState(AppStates.Zipping);
+          void getSaveFiles(
+            downloaded,
+            `${downloader.resolved?.folder || "downloaded"}`
+          ).then((downloadableFile) => {
+            setDownloadable(downloadableFile);
+            setState(AppStates.Finished);
+            if (SettingsManager.isSetting("downloaderMode", ["autoSave"])) {
+              void saveFile(
+                downloadableFile.content,
+                downloadableFile.filename
+              ).then(() => {
+                console.log("Auto downloaded");
+              });
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(`File Downloader error`, err);
+          ErrorNotification(
+            "A Error occurred during the process of downloading files",
+            "Fatal Error on download",
+            true
+          );
         });
-      });
     }
   }, [downloader, state]);
 
@@ -182,103 +205,122 @@ export default function DownloadPage() {
     <Flex direction="column" gap="md">
       {/** Info panel */}
       <DownloaderInfoComponent
-          resolvedData={downloader.resolved}
-          githubData={repoInfo}
-          loading={!(downloader.resolved !== null && repoInfo)}
-          files={{ count: fileInfo.length, size: fileInfo.reduce((a, b) => a + b.size, 0)}}
+        resolvedData={downloader.resolved}
+        githubData={repoInfo}
+        loading={!(downloader.resolved !== null && repoInfo)}
+        files={{
+          count: filteredFiles.length,
+          size: filteredFiles.reduce((a, b) => a + b.size, 0),
+        }}
       />
       <Divider />
       {/** Controls */}
-      <Flex maw={500} gap="md" align="center">
-        <Button
-          leftIcon={<AiOutlineCloudDownload />}
-          variant="outline"
-          disabled={!downloadableFile}
-          onClick={savePackedFiles}
-        >
-          {downloadableFile
-            ? `Download Packed ${downloadableFile.filename}`
-            : "Download not ready"}
-        </Button>
-        {state === AppStates.Starting && (
+      <Grid>
+        <Grid.Col md={6} lg={2}>
           <Button
             leftIcon={<AiOutlineCloudDownload />}
-            variant="light"
-            onClick={() => setState(AppStates.Downloading)}
-            disabled={!fileInfo.length}
+            variant="outline"
+            disabled={!downloadableFile}
+            onClick={savePackedFiles}
           >
-            {fileInfo.length
-              ? `Fetch All ${fileInfo.length} Files`
-              : "No Files to Fetch"}
+            {downloadableFile
+              ? `Download Packed ${downloadableFile.filename}`
+              : "Download not ready"}
           </Button>
+        </Grid.Col>
+        {state === AppStates.Starting && (
+          <>
+            <Grid.Col md={6} lg={2}>
+              <Button
+                leftIcon={<AiOutlineCloudDownload />}
+                variant="light"
+                onClick={() => setState(AppStates.Downloading)}
+                disabled={!filteredFiles.length}
+              >
+                {filteredFiles.length
+                  ? `Fetch All ${filteredFiles.length} Files`
+                  : "No Files to Fetch"}
+              </Button>
+            </Grid.Col>
+            <Grid.Col md={6} lg={3}>
+              <TextInput
+                placeholder="Filter by path (globs supported)"
+                onChange={(e) => setPathFilter(e.currentTarget.value)}
+              />
+            </Grid.Col>
+          </>
         )}
-        <TextInput placeholder="Search by path" onChange={(e) => setPathFiler(e.currentTarget.value)}/>
-      </Flex>
+      </Grid>
       <Divider />
       {/** Data panel */}
       <Flex direction="column" align="center" gap="md">
-      <Table highlightOnHover withBorder withColumnBorders>
-        <thead>
-          <tr>
-            <th>File location</th>
-            <th>Size</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentFiles.map((file, i) => (
-            <tr key={i}>
-              <td>
-                <Anchor
-                  target="_blank"
-                  href={`https://github.com/${
-                    downloader?.resolved?.username || ""
-                  }/${downloader?.resolved?.repo || ""}/blob/${
-                    downloader?.resolved?.branch || ""
-                  }/${file.path}`}
-                >
-                  {file.path.replace(`${downloader.resolved?.directory as string}/`, '')}
-                </Anchor>
-              </td>
-              <td>{prettyBytes(file.size)}</td>
-              <td>
-                {state === AppStates.Starting && !file.downloaded && (
-                  <Text fw={500} color="yellow">
-                    {animationsEnabled && <Loader size="md" variant="dots" color="yellow" />} Waiting
-                    (Click Fetch to start)
-                  </Text>
-                )}
-                {state === AppStates.Downloading && !file.downloaded && (
-                  <Text fw={500} color="violet">
-                    {animationsEnabled && <Loader color="violet" variant="dots" />} Downloading
-                  </Text>
-                )}
-                {state === AppStates.Finished && (file.downloaded ? (
-                  <Text fw={500} color="green">
-                    <AiOutlineCheck /> Downloaded
-                  </Text>
-                ) : (
-                <Text fw={500} c="red">
-                  <AiOutlineClose />{" "}
-                  Error downloading
-                </Text>
-                ))}
-                {state === AppStates.Zipping && (file.downloaded ? (
-                  <Text fw={500} color="teal.8">
-                    <AiOutlineCheck /> Zipping
-                  </Text>
-                ): (
-                  <Text fw={500} c="red">
-                    <AiOutlineClose />{" "}
-                    Error downloading
-                </Text>
-                ))}
-              </td>
+        <Table highlightOnHover withBorder withColumnBorders>
+          <thead>
+            <tr>
+              <th>File location</th>
+              <th>Size</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-      <Pagination onChange={setPage} total={chunkedFiles.length} />
+          </thead>
+          <tbody>
+            {currentFiles.map((file, i) => (
+              <tr key={i}>
+                <td>
+                  <Anchor
+                    target="_blank"
+                    href={`https://github.com/${
+                      downloader?.resolved?.username || ""
+                    }/${downloader?.resolved?.repo || ""}/blob/${
+                      downloader?.resolved?.branch || ""
+                    }/${file.path}`}
+                  >
+                    {file.relativePath}
+                  </Anchor>
+                </td>
+                <td>{prettyBytes(file.size)}</td>
+                <td>
+                  {state === AppStates.Starting && !file.downloaded && (
+                    <Text fw={500} color="yellow">
+                      {animationsEnabled && (
+                        <Loader size="md" variant="dots" color="yellow" />
+                      )}{" "}
+                      Waiting (Click Fetch to start)
+                    </Text>
+                  )}
+                  {state === AppStates.Downloading && !file.downloaded && (
+                    <Text fw={500} color="violet">
+                      {animationsEnabled && (
+                        <Loader color="violet" variant="dots" />
+                      )}{" "}
+                      Downloading
+                    </Text>
+                  )}
+                  {state === AppStates.Finished &&
+                    (file.downloaded ? (
+                      <Text fw={500} color="green">
+                        <AiOutlineCheck /> Downloaded
+                      </Text>
+                    ) : (
+                      <Text fw={500} c="red">
+                        <AiOutlineClose /> Error downloading
+                      </Text>
+                    ))}
+                  {state === AppStates.Zipping &&
+                    (file.downloaded ? (
+                      <Text fw={500} color="teal.8">
+                        <AiOutlineCheck /> Zipping
+                      </Text>
+                    ) : (
+                      <Text fw={500} c="red">
+                        <AiOutlineClose /> Error downloading
+                      </Text>
+                    ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <Pagination onChange={setPage} total={chunkedFiles.length} />
       </Flex>
     </Flex>
   );

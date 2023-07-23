@@ -13,6 +13,9 @@ only a small portion of the repository of a large repository. This tool allows y
 * Support downloading of private repositories ([*](#limitation-on-private-repositories)) 🔒
 * Download large directories 📂
 
+
+# 
+
 # 🚀 Demo
 
 Click on any of the demo links to try it out.
@@ -37,7 +40,7 @@ After generating a token, paste the token into the input, make sure "Use Token f
 
 ![Settings Github token2](./docs/settings2.png)
 
-If all is good following notification should appear (if not check if your mistyped)
+If all is good following notification should appear (if not check if you mistyped)
 
 ![Settings Github notif](./docs/settingsNotif.png)
 

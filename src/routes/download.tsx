@@ -61,9 +61,15 @@ export default function DownloadPage() {
     true
   );
 
-  const [chunkPage, setPage] = useState(0)
-  const chunkedFiles = useMemo(() => chunkArray<File>(fileInfo, 5), [fileInfo])
-  const currentFiles = useMemo(() => chunkedFiles[chunkPage - 1] || [], [chunkPage, chunkedFiles]);
+  // for pagination
+  const [chunkPage, setPage] = useState(0);
+  const [pathFiler, setPathFiler] = useState('')
+  // check filters before chunking them
+  const filteredFiles = useMemo(() => pathFiler === '' ? fileInfo : fileInfo.filter(file => file.path.includes(pathFiler)), [fileInfo, pathFiler])
+  // use memo to insure this does not change unless new files get added
+  // or page changes
+  const chunkedFiles = useMemo(() => chunkArray<File>(filteredFiles, 5), [filteredFiles])
+  const currentFiles = useMemo(() => chunkedFiles[Math.max(chunkPage - 1, 0)] || [], [chunkPage, chunkedFiles]);
 
   const downloader = useMemo(
     () => new RepositoryDownloader(searchParams.get("resolve") as string),
@@ -206,7 +212,7 @@ export default function DownloadPage() {
               : "No Files to Fetch"}
           </Button>
         )}
-        <TextInput />
+        <TextInput placeholder="Search by path" onChange={(e) => setPathFiler(e.currentTarget.value)}/>
       </Flex>
       <Divider />
       {/** Data panel */}

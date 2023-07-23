@@ -74,7 +74,7 @@ There are currently 3 Downloader modes,
 
 #### Limitation on Large repositories
 
-Only tested limits for large repositories is the (linux kernel repo)(https://github.com/torvalds/linux/tree/master/fs) of [2156 Files with total size 42.9 MB](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs). While even larger amounts are theoretically possible, are not guaranteed. The tool's performance may vary depending on the size and complexity of the repository being accessed.
+Only tested limits for large repositories is the [linux kernel repo](https://github.com/torvalds/linux/tree/master/fs) of [2156 Files with total size 42.9 MB](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs). While even larger amounts are theoretically possible, are not guaranteed. The tool's performance may vary depending on the size and complexity of the repository being accessed.
 
 ## Credits
 

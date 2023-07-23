@@ -61,7 +61,7 @@ export default function DownloadPage() {
 
   const [chunkPage, setPage] = useState(0)
   const chunkedFiles = useMemo(() => chunkArray<File>(fileInfo, 5), [fileInfo])
-  const currentFiles = useMemo(() => chunkedFiles[chunkPage] || [], [chunkPage, chunkedFiles]);
+  const currentFiles = useMemo(() => chunkedFiles[chunkPage - 1] || [], [chunkPage, chunkedFiles]);
 
   const downloader = useMemo(
     () => new RepositoryDownloader(searchParams.get("resolve") as string),
@@ -269,7 +269,7 @@ export default function DownloadPage() {
           ))}
         </tbody>
       </Table>
-      <Pagination onChange={setPage} total={chunkedFiles.length - 1} />
+      <Pagination onChange={setPage} total={chunkedFiles.length} />
       </Flex>
     </Flex>
   );

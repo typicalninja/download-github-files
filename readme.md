@@ -1,30 +1,30 @@
 # 📂 download-github-files
 
 Download **Individual** 📂 Directories from github. By default github only allows you to download the whole repository. This becomes a issue when you are trying to download
-only a small portion of the repository of a large repository. This tool allows you to download what you need and even filter out the files you will download with [globs](https://en.wikipedia.org/wiki/Glob_(programming)) (Note only available with [downloader mode **1**](#downloader-modes))
+only a small portion of the repository of a large repository. This tool allows you to download what you need and even filter out the files you will download with [globs](https://en.wikipedia.org/wiki/Glob_(programming)) (Note: only available with [downloader mode **1**](#downloader-modes))
+
+> This is a web only project, you can use **git** (require some amount of knowledge) to do this on your own.
 
 # ✨ Features
 
-* Elegant ui powered by [mantine](https://mantine.dev) 💻
+* Elegant ui powered by [mantine](https://mantine.dev) & React 💻
 * [Control panel to customize your experience](#⚙️-settings-panel-overview) ⚙️
 * Fast downloads ⚡️
-* Filter and only download the files you need ([Supported only with downloader mode **1**](#downloader-modes)), powered by [minimatch](https://github.com/isaacs/minimatch/tree/main)
+* Filter and only download the files you need ([Only with mode **1**](#downloader-modes)), powered by [minimatch](https://github.com/isaacs/minimatch/tree/main) 📋
 * Automatic zip file generation 📦
-* Support downloading of private repositories ([*](#limitation-on-private-repositories)) 🔒
-* Download large directories 📂
+* Support downloading of private repositories 🔒 ([*](#limitation-on-private-repositories))
+* Download large directories 📂 ([*](#limitation-on-large-repositories))
 
-
-# 
 
 # 🚀 Demo
 
 Click on any of the demo links to try it out.
 
-* [Download one file](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/typicalninja493/download-github-files/blob/main/readme.md)
 * [Download With Nested Directories](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/typicalninja493/tweets.ts/tree/main/docs)
 * [Download of large amount of files](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/umami-software/umami/tree/master/public/images/flags)
+* [Even larger amount of files](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs)
 
-# ⚙️ Settings Panel overview
+## ⚙️ Settings Panel overview
 
 ### Github token
 ![Settings Github token](./docs/settings.png)
@@ -55,18 +55,16 @@ There are currently 3 Downloader modes,
 
 3. Fetch repo and Download & Save Files - Download will start on visiting the site and save prompt will appear automatically
 
-# ⚠️ Limitations
+## ⚠️ Limitations
 
-### API Limits
+#### API Limits
 
 * This tool utilizes the GitHub API to retrieve file lists and their content. As with any API, there are limits. By default, the tool operates in ****Guest** mode, which may have lower API limits.
 
 * If you desire a higher API limit, [create a GitHub personal token](https://github.com/settings/tokens/new?description=Download%20Github%20Files&scopes=repo) and 
 [add it to the settings panel](#github-token) of the downloader. **Remember to refresh the page** after adding the token.
 
-* For large repositories this api will try to download the content via a different strategy due to api limitation, however the amount of files downloaded may vary (it may also cost more in resources)
-
-### Limitation on Private Repositories
+#### Limitation on Private Repositories
 
 * The downloader requires a personal access token to be [added to the settings panel]((#settings-panel-overview)) to view any private repository
 
@@ -74,12 +72,14 @@ There are currently 3 Downloader modes,
 
 > [Fine grained access tokens also work](https://github.com/settings/tokens?type=beta)
 
+#### Limitation on Large repositories
+
+Only tested limits for large repositories is the (linux kernel repo)(https://github.com/torvalds/linux/tree/master/fs) of [2156 Files with total size 42.9 MB](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs). While even larger amounts are theoretically possible, are not guaranteed. The tool's performance may vary depending on the size and complexity of the repository being accessed.
+
+## Credits
 
 
-# Credits
-
-
-### Packages used
+#### Packages used
 
 * [react](https://react.dev/)
 * [mantine ui](https://mantine.dev) - ui
@@ -88,7 +88,7 @@ There are currently 3 Downloader modes,
 * [p-map & p-retry](https://github.com/sindresorhus/p-map) - promise based stuff
 * [minimatch](https://github.com/isaacs/minimatch/tree/main) - use in the filter to check file path with glob support
 
-### Inspiration
+#### Inspiration
 
 * [download-directory.github.io](https://download-directory.github.io) - Direct Inspiration for this project
 

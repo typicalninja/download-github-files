@@ -68,7 +68,7 @@ export default function DownloadPage() {
     () =>
       pathFilter === ""
         ? fileInfo
-        : fileInfo.filter((file) => minimatch(file.relativePath, pathFilter, { matchBase: true, partial: true })),
+        : fileInfo.filter((file) => minimatch(file.relativePath, pathFilter, { matchBase: true })),
     [fileInfo, pathFilter]
   );
   // use memo to insure this does not change unless new files get added

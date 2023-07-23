@@ -7,7 +7,8 @@ import {
   Anchor,
   Divider,
   Button,
-  Pagination
+  Pagination,
+  TextInput
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 
@@ -17,6 +18,7 @@ import {
   AiOutlineCheck,
   AiOutlineCloudDownload,
 } from "react-icons/ai";
+
 
 // utils
 import {
@@ -181,7 +183,7 @@ export default function DownloadPage() {
       />
       <Divider />
       {/** Controls */}
-      <Flex gap="md">
+      <Flex maw={500} gap="md" align="center">
         <Button
           leftIcon={<AiOutlineCloudDownload />}
           variant="outline"
@@ -204,6 +206,7 @@ export default function DownloadPage() {
               : "No Files to Fetch"}
           </Button>
         )}
+        <TextInput />
       </Flex>
       <Divider />
       {/** Data panel */}

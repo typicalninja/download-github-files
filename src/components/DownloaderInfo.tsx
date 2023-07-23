@@ -4,12 +4,9 @@ import type { GithubRepo, ResolvedRepoData } from "../lib/constants";
 // icons
 import {
   AiOutlineCloudDownload,
-  AiFillLock,
   AiFillFolderOpen,
-  AiFillUnlock
 } from "react-icons/ai";
-import { GoRepo, GoGitBranch } from "react-icons/go";
-
+import { GoRepo, GoGitBranch, GoRepoLocked } from "react-icons/go";
 import prettyBytes from "pretty-bytes";
 
 /**
@@ -43,8 +40,7 @@ export default function DownloaderInfoComponent({
           value={githubData?.full_name || "Invalid Repo"}
           readOnly
           size="sm"
-          icon={<GoRepo />}
-          rightSection={githubData?.private ? <AiFillLock /> : <AiFillUnlock />}
+          icon={githubData?.private ? <GoRepoLocked /> : <GoRepo />}
         />
         <TextInput
           placeholder="Loading..."

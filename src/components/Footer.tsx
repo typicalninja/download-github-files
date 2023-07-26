@@ -9,7 +9,7 @@ export default function FooterComponent() {
             <Divider  orientation="vertical"/>
             <Anchor href={links.sourceRepo} target="_blank">Source code</Anchor>
             <Divider  orientation="vertical"/>
-            <Anchor href={links.analytics} target="_blank">Analytics</Anchor>
+            <Anchor href={links.tutorialVid} target="_blank">How to / Demo</Anchor>
             </Flex>
         </Footer>
     )

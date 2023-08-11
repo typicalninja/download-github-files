@@ -1,5 +1,7 @@
 # 📂 download-github-files
 
+[![CodeFactor](https://www.codefactor.io/repository/github/typicalninja/download-github-files/badge)](https://www.codefactor.io/repository/github/typicalninja/download-github-files)
+
 Download **Individual** 📂 Directories from github. By default github only allows you to download the whole repository. This becomes a issue when you are trying to download
 only a small portion of the repository of a large repository. This tool allows you to download what you need and even filter out the files you will download with [globs](https://en.wikipedia.org/wiki/Glob_(programming)) (Note: only available with [downloader mode **1**](#downloader-modes))
 
@@ -20,9 +22,9 @@ only a small portion of the repository of a large repository. This tool allows y
 
 Click on any of the demo links to try it out.
 
-* [Download With Nested Directories](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/typicalninja493/tweets.ts/tree/main/docs)
-* [Download of large amount of files](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/umami-software/umami/tree/master/public/images/flags)
-* [Even larger amount of files](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs)
+* [Download With Nested Directories](https://typicalninja.github.io/download-github-files/d?resolve=https://github.com/typicalninja/tweets.ts/tree/main/docs)
+* [Download of large amount of files](https://typicalninja.github.io/download-github-files/d?resolve=https://github.com/umami-software/umami/tree/master/public/images/flags)
+* [Even larger amount of files](https://typicalninja.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs)
 
 ## ⚙️ Settings Panel overview
 
@@ -74,7 +76,7 @@ There are currently 3 Downloader modes,
 
 #### Limitation on Large repositories
 
-Only tested limits for large repositories is the [linux kernel repo](https://github.com/torvalds/linux/tree/master/fs) of [2156 Files with total size 42.9 MB](https://typicalninja493.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs). While even larger amounts are theoretically possible, are not guaranteed. The tool's performance may vary depending on the size and complexity of the repository being accessed.
+Only tested limits for large repositories is the [linux kernel repo](https://github.com/torvalds/linux/tree/master/fs) of [2156 Files with total size 42.9 MB](https://typicalninja.github.io/download-github-files/d?resolve=https://github.com/torvalds/linux/tree/master/fs). While even larger amounts are theoretically possible, are not guaranteed. The tool's performance may vary depending on the size and complexity of the repository being accessed.
 
 ## Credits
 

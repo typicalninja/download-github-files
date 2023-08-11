@@ -1,6 +1,6 @@
 export const links = {
   personalSite: "https://typical.gq",
-  sourceRepo: "https://github.com/typicalninja493/download-github-files",
+  sourceRepo: "https://github.com/typicalninja/download-github-files",
   tutorialVid: "https://www.youtube.com/watch?v=9AUoDRbXml8"
 };
 

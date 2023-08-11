@@ -191,7 +191,7 @@ export default function DownloadPage() {
           );
         });
     }
-  }, [downloader, state]);
+  }, [downloader, state, filteredFiles]);
 
   const savePackedFiles = () => {
     if (downloadableFile) {

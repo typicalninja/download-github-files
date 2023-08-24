@@ -3,6 +3,7 @@ import { Flex, TextInput, Button, Title, Divider, Text } from "@mantine/core";
 import { BsCloudDownload } from "react-icons/bs";
 import {  AiFillStar } from "react-icons/ai";
 import { GoRepo } from "react-icons/go";
+import { BiCookie } from "react-icons/bi"
 
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ import { useEffect } from "react";
 import { notifications } from "@mantine/notifications";
 import { SettingsManager as settings } from "../lib/Settings";
 
+interface umami { track: (f:string, data: unknown) => void }
 
 export default function Index() {
   const navigate = useNavigate();
@@ -22,15 +24,49 @@ export default function Index() {
 
   const onSubmit = (values: { directoryLink: string }) => {
     settings.setSetting("lastDirectory", values.directoryLink);
+    const analyticsEnabled = settings.getSetting('analytics');
+    // analytics
+    if(typeof (window as unknown as { umami: umami }).umami !== 'undefined' && analyticsEnabled === true) {
+      console.log(`Tracking enabled, sending event "download-as-button"`);
+      (window as unknown as { umami: umami }).umami.track('download-as-button', { repo: values.directoryLink });
+    }
+    else console.log(`:( tracking blocked, analyticsEnabled: ${String(analyticsEnabled)}`)
+
     navigate(`/d?resolve=${values.directoryLink}`);
   };
+
+
+  const openGithub = () => {
+    const analyticsEnabled = settings.getSetting('analytics');
+    if(typeof (window as unknown as { umami: umami }).umami !== 'undefined' && analyticsEnabled === true) {
+      console.log(`Tracking enabled, sending event "view-repository-button"`);
+      (window as unknown as { umami: { track: (f:string) => void } }).umami.track('view-repository-button');
+    } else console.log(`:( tracking blocked, analyticsEnabled: ${String(analyticsEnabled)}`)
+
+    window.open(links.sourceRepo)
+  }
+
   useEffect(() => {
     const savedDir = settings.getSetting('lastDirectory');
     if (savedDir) form.setValues({ directoryLink: savedDir });
-
     // in index check for github token and if not found suggest it
     const ghToken = settings.getSetting('token')
     const lastSuggestion = settings.getSetting('tokenSuggestion')
+    const analytics = settings.getSetting('analytics')
+
+    if(!analytics && analytics === null) {
+      notifications.show({
+        title: "Analytics",
+        message: `This program may collect analytics data for informational purposes. You can disable them in the settings`,
+        id: "privacyNotification",
+        color: 'yellow',
+        icon: <BiCookie />,
+        autoClose: false,
+      });
+
+      settings.setSetting('analytics', true)
+    }
+
     if (!ghToken) {
       if(lastSuggestion && (lastSuggestion + (600000)) > Date.now()) return;
       settings.setSetting('tokenSuggestion', Date.now());
@@ -98,7 +134,7 @@ export default function Index() {
             Download directory
           </Button>
           <Button
-            onClick={() => window.open(links.sourceRepo)}
+            onClick={openGithub}
             leftIcon={<GoRepo />}
             variant="outline"
             color="teal"

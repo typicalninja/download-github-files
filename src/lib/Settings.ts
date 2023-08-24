@@ -4,6 +4,7 @@ export interface DownloaderSettings {
     downloaderMode: 'autoFetch' | 'autoFetchAnDownload' | 'autoSave';
     lastDirectory: string;
     tokenSuggestion: number | null;
+    analytics: boolean | null
 }
 
 export const defaultSettings: DownloaderSettings = {
@@ -11,7 +12,8 @@ export const defaultSettings: DownloaderSettings = {
     tokenEnabled: true,
     token: '',
     lastDirectory: '',
-    tokenSuggestion: null
+    tokenSuggestion: null,
+    analytics: null,
 }
 
 export default class DownloaderSettingsManager {

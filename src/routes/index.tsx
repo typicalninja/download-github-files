@@ -31,7 +31,7 @@ export default function Index() {
 
 
   const openGithub = () => {
-    UmamiManager.sendEvent('view-repository-button', {})
+    UmamiManager.sendEvent('view-repository-button', { at: new Date().toDateString() })
     window.open(links.sourceRepo)
   }
 

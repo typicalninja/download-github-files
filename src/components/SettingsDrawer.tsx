@@ -27,6 +27,7 @@ export default function SettingsDrawer() {
 
   const updateMode = (mode: string) => {
     setMode(mode);
+    UmamiManager.sendEvent(`downloader-state`, { mode: mode })
     settings.setSetting(
       "downloaderMode",
       mode as DownloaderSettings["downloaderMode"]

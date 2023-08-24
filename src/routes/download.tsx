@@ -119,7 +119,7 @@ export default function DownloadPage() {
                     ? AppStates.Downloading
                     : AppStates.Starting
                 );
-                UmamiManager.sendEvent('download-repository', { files: files.length, repository: info.full_name, downloaderMode: downloader.SettingsManager.getSetting('downloaderMode'), privateRepository: info.private })
+                UmamiManager.sendEvent('download-repository', { files: files.length, repository: info.full_name })
                 if (files.length > 100) {
                   // disable on large repositories or it may cause performance issues
                   setanimationsEnabled(false);

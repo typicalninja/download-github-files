@@ -17,6 +17,8 @@ import {
 import { fetchCurrentTokenUser } from "../lib/github";
 import { notifications } from "@mantine/notifications";
 
+import * as UmamiManager from "../lib/Umami";
+
 export default function SettingsDrawer() {
   const [token, setToken] = useState("");
   const [mode, setMode] = useState<string | null>("");
@@ -63,12 +65,15 @@ export default function SettingsDrawer() {
   const setTokenState = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.currentTarget.checked;
     setTokenEnabled(checked);
+    UmamiManager.sendEvent(`token-state`, { enabled: checked })
     settings.setSetting("tokenEnabled", checked);
   };
 
   const toggleAnalytics = () => {
     const newState = !analyticsEnabled;
     setAnalyticsEnabled(newState);
+    // just to see how many turned off, no additional data is collected
+    UmamiManager.sendEvent(`analytic-state`, { enabled: newState })
     settings.setSetting("analytics", newState);
     notifications.show({
       message: `Analytics toggle`,

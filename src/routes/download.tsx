@@ -39,6 +39,8 @@ import { SettingsManager } from "../lib/Settings";
 import { RepositoryDownloader } from "../lib/github";
 import { minimatch } from 'minimatch';
 
+import * as UmamiManager from "../lib/Umami";
+
 import {
   ErrorNotification,
   SuccessNotification,
@@ -88,6 +90,7 @@ export default function DownloadPage() {
   );
 
   useEffect(() => {
+    UmamiManager.pageView();
     // if blob (file) error, cannot directly download blob types
     if (downloader.resolved?.type === "blob")
       throw new Error(
@@ -116,6 +119,7 @@ export default function DownloadPage() {
                     ? AppStates.Downloading
                     : AppStates.Starting
                 );
+                UmamiManager.sendEvent('download-repository', { files: files.length, repository: info.full_name, downloaderMode: downloader.SettingsManager.getSetting('downloaderMode'), privateRepository: info.private })
                 if (files.length > 100) {
                   // disable on large repositories or it may cause performance issues
                   setanimationsEnabled(false);

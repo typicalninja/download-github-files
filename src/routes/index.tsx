@@ -11,8 +11,7 @@ import { useForm } from "@mantine/form";
 import { useEffect } from "react";
 import { notifications } from "@mantine/notifications";
 import { SettingsManager as settings } from "../lib/Settings";
-
-interface umami { track: (f:string, data: unknown) => void }
+import * as UmamiManager from "../lib/Umami";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -24,29 +23,21 @@ export default function Index() {
 
   const onSubmit = (values: { directoryLink: string }) => {
     settings.setSetting("lastDirectory", values.directoryLink);
-    const analyticsEnabled = settings.getSetting('analytics');
     // analytics
-    if(typeof (window as unknown as { umami: umami }).umami !== 'undefined' && analyticsEnabled === true) {
-      console.log(`Tracking enabled, sending event "download-as-button"`);
-      (window as unknown as { umami: umami }).umami.track('download-as-button', { repo: values.directoryLink });
-    }
-    else console.log(`:( tracking blocked, analyticsEnabled: ${String(analyticsEnabled)}`)
+    UmamiManager.sendEvent('download-as-button', { repo: values.directoryLink })
 
     navigate(`/d?resolve=${values.directoryLink}`);
   };
 
 
   const openGithub = () => {
-    const analyticsEnabled = settings.getSetting('analytics');
-    if(typeof (window as unknown as { umami: umami }).umami !== 'undefined' && analyticsEnabled === true) {
-      console.log(`Tracking enabled, sending event "view-repository-button"`);
-      (window as unknown as { umami: { track: (f:string) => void } }).umami.track('view-repository-button');
-    } else console.log(`:( tracking blocked, analyticsEnabled: ${String(analyticsEnabled)}`)
-
+    UmamiManager.sendEvent('view-repository-button', {})
     window.open(links.sourceRepo)
   }
 
   useEffect(() => {
+    // register a pageView
+    UmamiManager.pageView();
     const savedDir = settings.getSetting('lastDirectory');
     if (savedDir) form.setValues({ directoryLink: savedDir });
     // in index check for github token and if not found suggest it

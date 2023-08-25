@@ -1,7 +1,8 @@
 export const links = {
   personalSite: "https://typical.gq",
   sourceRepo: "https://github.com/typicalninja/download-github-files",
-  tutorialVid: "https://www.youtube.com/watch?v=9AUoDRbXml8"
+  tutorialVid: "https://www.youtube.com/watch?v=9AUoDRbXml8",
+  bugReport: "https://github.com/typicalninja/download-github-files/issues/new?title=[BUG]"
 };
 
 export enum AppStates {

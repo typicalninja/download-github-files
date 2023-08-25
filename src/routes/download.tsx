@@ -90,7 +90,6 @@ export default function DownloadPage() {
   );
 
   useEffect(() => {
-    UmamiManager.pageView();
     // if blob (file) error, cannot directly download blob types
     if (downloader.resolved?.type === "blob")
       throw new Error(
@@ -98,6 +97,8 @@ export default function DownloadPage() {
       );
     // handle Idle Phase
     if (state === AppStates.Idle) {
+      // analytics should only run on first time
+      UmamiManager.pageView();
       downloader
         .fetchRepo()
         .then((info) => {

@@ -1,10 +1,9 @@
 import { Flex, TextInput, Button, Title, Divider, Text } from "@mantine/core";
 // icons
 import { BsCloudDownload } from "react-icons/bs";
-import {  AiFillStar } from "react-icons/ai";
-import { GoRepo } from "react-icons/go";
-import { BiCookie } from "react-icons/bi"
-
+import { AiFillStar } from "react-icons/ai";
+import { GoRepo, GoRepoLocked  } from "react-icons/go";
+import { BiCookie } from "react-icons/bi";
 import { links } from "../lib/constants";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "@mantine/form";
@@ -24,56 +23,63 @@ export default function Index() {
   const onSubmit = (values: { directoryLink: string }) => {
     settings.setSetting("lastDirectory", values.directoryLink);
     // analytics
-    UmamiManager.sendEvent('download-as-button', { repo: values.directoryLink })
+    UmamiManager.sendEvent("download-as-button", {
+      repo: values.directoryLink,
+    });
 
     navigate(`/d?resolve=${values.directoryLink}`);
   };
 
-
   const openGithub = () => {
-    UmamiManager.sendEvent('view-repository-button', { at: new Date().toDateString() })
-    window.open(links.sourceRepo)
-  }
+    UmamiManager.sendEvent("view-repository-button", {
+      at: new Date().toDateString(),
+    });
+    window.open(links.sourceRepo);
+  };
 
   useEffect(() => {
     // register a pageView
     UmamiManager.pageView();
-    const savedDir = settings.getSetting('lastDirectory');
+    const savedDir = settings.getSetting("lastDirectory");
     if (savedDir) form.setValues({ directoryLink: savedDir });
     // in index check for github token and if not found suggest it
-    const ghToken = settings.getSetting('token')
-    const lastSuggestion = settings.getSetting('tokenSuggestion')
-    const analytics = settings.getSetting('analytics')
+    const ghToken = settings.getSetting("token");
+    const lastSuggestion = settings.getSetting("tokenSuggestion");
+    const analytics = settings.getSetting("analytics");
 
-    if(!analytics && analytics === null) {
+    // analytics check
+    if (!analytics && analytics === null) {
+      // piggy back on analytics not being loaded only the first time
+      // little bit of promotion
       notifications.show({
-        title: "Analytics",
-        message: `This program may collect analytics data for informational purposes. You can disable them in the settings`,
-        id: "privacyNotification",
-        color: 'yellow',
-        icon: <BiCookie />,
-        autoClose: false,
+        message: `If you like this project please give us a star ⭐ on our github page!`,
+        id: "starNotification",
+        color: "yellow",
+        icon: <AiFillStar />,
+        autoClose: 7000,
       });
 
-      settings.setSetting('analytics', true)
+      // notif
+      notifications.show({
+        message: `This program may collect analytics data for informational purposes. You can disable them in the settings`,
+        id: "privacyNotification",
+        color: "orange",
+        icon: <BiCookie />,
+        autoClose: 7000,
+      });
+
+      settings.setSetting("analytics", true);
     }
 
     if (!ghToken) {
-      if(lastSuggestion && (lastSuggestion + (600000)) > Date.now()) return;
-      settings.setSetting('tokenSuggestion', Date.now());
+      if (lastSuggestion && lastSuggestion + 600000 > Date.now()) return;
+      settings.setSetting("tokenSuggestion", Date.now());
       notifications.show({
         title: "Access Private repositories & Higher downloads limits",
         message: `If you want higher downloads limits & access to private repositories, add a Github token using the cog wheel in the header`,
         id: "requestTokenNotification",
         autoClose: false,
-      });
-      // little bit of promotion
-      notifications.show({
-        title: "Give us a star ⭐",
-        message: `If you like this project please give us a star ⭐ on our github page!`,
-        id: "starNotification",
-        color: 'yellow',
-        icon: <AiFillStar />
+        icon: <GoRepoLocked />
       });
     }
     // disable since, form changes when you type in the input, resulting in directoryLink Not changing

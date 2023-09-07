@@ -33,7 +33,8 @@ export async function getSaveFiles(
   // multiple files, create a zip file
   const zipDirectory = {} as Zippable;
   for (const file of filesWithBlobs) {
-    zipDirectory[file.relativePath] = await blobToArrayBuffer(file.blob);
+     // fix bug when blob is undefined (download failed)
+    if(file.blob && file.blob instanceof Blob) zipDirectory[file.relativePath] = await blobToArrayBuffer(file.blob);
   }
 
   const zipped = await asyncCreateZip(zipDirectory);
